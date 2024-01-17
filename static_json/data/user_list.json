@@ -1,0 +1,30 @@
+[
+    {
+        "id": 1,
+        "first_name": "daisuke",
+        "last_name": "takayama",
+        "username": "takayama daisuke",
+        "email": "webcyou@webcyou.com"
+    },
+    {
+        "id": 2,
+        "first_name": "Haruka",
+        "last_name": "Tanaka",
+        "username": "haruka_t",
+        "email": "haruka.tanaka@example.com"
+    },
+    {
+        "id": 3,
+        "first_name": "Yuki",
+        "last_name": "Sato",
+        "username": "yuki_s",
+        "email": "yuki.sato@example.com"
+    },
+    {
+        "id": 4,
+        "first_name": "Ryota",
+        "last_name": "Kobayashi",
+        "username": "ryota_k",
+        "email": "ryota.kobayashi@example.com"
+    }
+]

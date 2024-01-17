@@ -1,0 +1,11 @@
+/Users/takayamadaisuke/development/private/actix_web_sample/static_json/target/debug/deps/liburl-cf0c7da192fad9d0.rmeta: /Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/lib.rs /Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/host.rs /Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/origin.rs /Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/parser.rs /Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/path_segments.rs /Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/slicing.rs /Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/quirks.rs
+
+/Users/takayamadaisuke/development/private/actix_web_sample/static_json/target/debug/deps/url-cf0c7da192fad9d0.d: /Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/lib.rs /Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/host.rs /Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/origin.rs /Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/parser.rs /Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/path_segments.rs /Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/slicing.rs /Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/quirks.rs
+
+/Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/lib.rs:
+/Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/host.rs:
+/Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/origin.rs:
+/Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/parser.rs:
+/Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/path_segments.rs:
+/Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/slicing.rs:
+/Users/takayamadaisuke/.cargo/registry/src/index.crates.io-6f17d22bba15001f/url-2.5.0/src/quirks.rs:
