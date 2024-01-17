@@ -12,12 +12,12 @@ struct User {
     email: String,
 }
 
-fn load_games() -> HashMap<u32, User> {
+fn load_users() -> HashMap<u32, User> {
     let mut file = File::open("data/user_list.json").expect("File not found");
     let mut contents = String::new();
     file.read_to_string(&mut contents).expect("Something went wrong reading the file");
-    let games: Vec<User> = serde_json::from_str(&contents).unwrap();
-    games.into_iter().map(|game| (game.id, game)).collect()
+    let users: Vec<User> = serde_json::from_str(&contents).unwrap();
+    users.into_iter().map(|user| (user.id, user)).collect()
 }
 
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
@@ -32,7 +32,7 @@ async fn get_user(id: web::Path<u32>, data: web::Data<HashMap<u32, User>>) -> im
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let users = web::Data::new(load_games());
+    let users = web::Data::new(load_users());
     HttpServer::new(move || {
         App::new()
             .app_data(users.clone())
