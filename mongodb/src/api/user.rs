@@ -4,8 +4,8 @@ use mongodb::bson::doc;
 use crate::model::user::User;
 use crate::repository::ddb::{COLL_NAME, DB_NAME};
 
-#[post("/add_user")]
-async fn add_user(client: web::Data<Client>, form: web::Form<User>) -> HttpResponse {
+#[post("/user")]
+async fn add_user(client: web::Data<Client>, form: web::Json<User>) -> HttpResponse {
     let collection = client.database(DB_NAME).collection(COLL_NAME);
     let result = collection.insert_one(form.into_inner(), None).await;
     match result {
@@ -14,7 +14,7 @@ async fn add_user(client: web::Data<Client>, form: web::Form<User>) -> HttpRespo
     }
 }
 
-#[get("/get_user/{username}")]
+#[get("/user/{username}")]
 async fn get_user(client: web::Data<Client>, username: web::Path<String>) -> HttpResponse {
     let username = username.into_inner();
     let collection: Collection<User> = client.database(DB_NAME).collection(COLL_NAME);
