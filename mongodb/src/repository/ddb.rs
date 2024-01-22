@@ -1,5 +1,5 @@
-use actix_web::web;
-use mongodb::{Client, IndexModel};
+use actix_web::{web};
+use mongodb::{Client, Collection, IndexModel};
 use mongodb::bson::doc;
 use mongodb::options::IndexOptions;
 use mongodb::results::InsertOneResult;
@@ -22,6 +22,7 @@ async fn create_username_index(client: &Client) {
         .expect("creating an index should succeed");
 }
 
+#[derive(Clone)]
 pub struct DDBRepository {
     pub client: Client,
     pub table_name: String
@@ -49,5 +50,10 @@ impl DDBRepository {
         //     Ok(_) => Ok(()),
         //     Err(_) => Err(DDBError)
         // }
+    }
+
+    pub async fn get_user(&self, username: String) -> mongodb::error::Result<Option<User>> {
+        let collection: Collection<User> = self.client.database(DB_NAME).collection(&self.table_name);
+        collection.find_one(doc! { "username": &username }, None).await
     }
 }

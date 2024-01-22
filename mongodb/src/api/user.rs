@@ -1,13 +1,10 @@
-use actix_web::{get, HttpResponse, post, web};
-use mongodb::{Client, Collection};
-use mongodb::bson::doc;
+use actix_web::{get, HttpResponse, post, web::Path, web::Json, web::Data};
 use crate::model::user::User;
-use crate::repository::ddb::{COLL_NAME, DB_NAME};
+use crate::repository::ddb::{DDBRepository};
 
 #[post("/user")]
-async fn add_user(client: web::Data<Client>, form: web::Json<User>) -> HttpResponse {
-    let collection = client.database(DB_NAME).collection(COLL_NAME);
-    let result = collection.insert_one(form.into_inner(), None).await;
+async fn add_user(ddb_repo: Data<DDBRepository>, request: Json<User>) -> HttpResponse {
+    let result = ddb_repo.post_user(request).await;
     match result {
         Ok(_) => HttpResponse::Ok().body("user added"),
         Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
@@ -15,14 +12,10 @@ async fn add_user(client: web::Data<Client>, form: web::Json<User>) -> HttpRespo
 }
 
 #[get("/user/{username}")]
-async fn get_user(client: web::Data<Client>, username: web::Path<String>) -> HttpResponse {
+async fn get_user(ddb_repo: Data<DDBRepository>, username: Path<String>) -> HttpResponse {
     let username = username.into_inner();
-    let collection: Collection<User> = client.database(DB_NAME).collection(COLL_NAME);
-
-    match collection
-        .find_one(doc! { "username": &username }, None)
-        .await
-    {
+    let collection = ddb_repo.get_user(username.clone()).await;
+    match collection {
         Ok(Some(user)) => HttpResponse::Ok().json(user),
         Ok(None) => {
             HttpResponse::NotFound().body(format!("No user found with username {username}"))

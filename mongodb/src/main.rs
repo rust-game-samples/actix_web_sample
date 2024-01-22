@@ -15,7 +15,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .app_data(web::Data::new(ddb_repo.client.clone()))
+            .app_data(web::Data::new(ddb_repo.clone()))
             .service(add_user)
             .service(get_user)
     })
