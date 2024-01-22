@@ -1,6 +1,8 @@
+use actix_web::web;
 use mongodb::{Client, IndexModel};
 use mongodb::bson::doc;
 use mongodb::options::IndexOptions;
+use mongodb::results::InsertOneResult;
 use crate::model::user::User;
 
 pub const DB_NAME: &str = "myApp";
@@ -35,5 +37,17 @@ impl DDBRepository {
             table_name,
             client
         }
+    }
+
+    pub async fn post_user(&self, user: web::Json<User>) -> mongodb::error::Result<InsertOneResult> {
+        let collection = self.client.database(DB_NAME).collection(&self.table_name);
+        // let result = collection.insert_one(user.into_inner(), None).await;
+        // todo: add uuid
+
+        collection.insert_one(user.into_inner(), None).await
+        // match request.send().await {
+        //     Ok(_) => Ok(()),
+        //     Err(_) => Err(DDBError)
+        // }
     }
 }
