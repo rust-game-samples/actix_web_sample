@@ -1101,8 +1101,10 @@ version = "0.1.0"
 dependencies = [
  "actix-web",
  "config",
+ "derive_more",
  "mongodb 2.8.0",
  "serde",
+ "uuid",
 ]
 
 [[package]]

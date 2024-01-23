@@ -1,10 +1,59 @@
-use actix_web::{get, HttpResponse, post, web::Path, web::Json, web::Data};
 use crate::model::user::User;
-use crate::repository::ddb::{DDBRepository};
+use crate::repository::ddb::DDBRepository;
+use actix_web::{
+    error::ResponseError,
+    get,
+    http::{header::ContentType, StatusCode},
+    post,
+    web::Data,
+    web::Json,
+    web::Path,
+    HttpResponse,
+};
+use derive_more::Display;
+use serde::{Deserialize, Serialize};
+
+#[derive(Deserialize)]
+pub struct SubmitUserRequest {
+    first_name: String,
+    last_name: String,
+    username: String,
+    email: String,
+}
+
+#[derive(Debug, Display)]
+pub enum UserError {
+    UserNotFound,
+    UserUpdateFailure,
+    UserCreationFailure,
+    BadUserRequest,
+}
+impl ResponseError for UserError {
+    fn error_response(&self) -> HttpResponse {
+        HttpResponse::build(self.status_code())
+            .insert_header(ContentType::json())
+            .body(self.to_string())
+    }
+
+    fn status_code(&self) -> StatusCode {
+        match self {
+            UserError::UserNotFound => StatusCode::NOT_FOUND,
+            UserError::UserUpdateFailure => StatusCode::FAILED_DEPENDENCY,
+            UserError::UserCreationFailure => StatusCode::FAILED_DEPENDENCY,
+            UserError::BadUserRequest => StatusCode::BAD_REQUEST,
+        }
+    }
+}
 
 #[post("/user")]
-async fn add_user(ddb_repo: Data<DDBRepository>, request: Json<User>) -> HttpResponse {
-    let result = ddb_repo.post_user(request).await;
+async fn add_user(ddb_repo: Data<DDBRepository>, request: Json<SubmitUserRequest>) -> HttpResponse {
+    let user = User::new(
+        request.first_name.clone(),
+        request.last_name.clone(),
+        request.username.clone(),
+        request.email.clone(),
+    );
+    let result = ddb_repo.post_user(user).await;
     match result {
         Ok(_) => HttpResponse::Ok().body("user added"),
         Err(err) => HttpResponse::InternalServerError().body(err.to_string()),

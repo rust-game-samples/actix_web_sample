@@ -10,3 +10,5 @@ mongodb = "2"
 actix-web = "^4"
 serde = { version = "^1", features = ["derive"] }
 config = "0.13.4"
+derive_more = "0.99.17"
+uuid = "1.7.0"
