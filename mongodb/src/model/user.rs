@@ -20,4 +20,8 @@ impl User {
             email,
         }
     }
+
+    pub fn get_uuid(&self) -> String {
+        format!("{}", self.uuid)
+    }
 }

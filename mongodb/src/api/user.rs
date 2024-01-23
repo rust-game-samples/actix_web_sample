@@ -13,6 +13,11 @@ use actix_web::{
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
+#[derive(Deserialize, Serialize)]
+pub struct UserIdentifier {
+    uuid: String,
+}
+
 #[derive(Deserialize)]
 pub struct SubmitUserRequest {
     first_name: String,
@@ -46,17 +51,21 @@ impl ResponseError for UserError {
 }
 
 #[post("/user")]
-async fn add_user(ddb_repo: Data<DDBRepository>, request: Json<SubmitUserRequest>) -> HttpResponse {
+async fn add_user(
+    ddb_repo: Data<DDBRepository>,
+    request: Json<SubmitUserRequest>,
+) -> Result<Json<UserIdentifier>, UserError> {
     let user = User::new(
         request.first_name.clone(),
         request.last_name.clone(),
         request.username.clone(),
         request.email.clone(),
     );
+    let user_uuid = user.get_uuid();
     let result = ddb_repo.post_user(user).await;
     match result {
-        Ok(_) => HttpResponse::Ok().body("user added"),
-        Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
+        Ok(_) => Ok(Json(UserIdentifier { uuid: user_uuid })),
+        Err(_) => Err(UserError::UserCreationFailure),
     }
 }
 
