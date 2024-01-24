@@ -1,13 +1,13 @@
-mod model;
 mod api;
+mod model;
 mod repository;
 
 #[cfg(test)]
 mod test;
 
+use crate::repository::ddb::{DDBRepository, COLL_NAME};
 use actix_web::{web, App, HttpServer};
-use api::user::{get_user, add_user};
-use crate::repository::ddb::{DDBRepository, COLL_NAME };
+use api::user::{add_user, get_user, update_user};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -18,8 +18,9 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(ddb_repo.clone()))
             .service(add_user)
             .service(get_user)
+            .service(update_user)
     })
-        .bind(("127.0.0.1", 8080))?
-        .run()
-        .await
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
 }

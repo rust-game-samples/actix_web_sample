@@ -1,5 +1,7 @@
 # Actix Web - MongoDB API
 
+Refactoring based on [this](https://github.com/actix/examples/tree/master/databases/mongodb) sample.
+
 Simple example of MongoDB usage with Actix Web. For more information on the MongoDB Rust driver, visit the [documentation](https://docs.rs/mongodb/2.0.0/mongodb/index.html) and [source code](https://github.com/mongodb/mongo-rust-driver).
 
 ## Basic Usage

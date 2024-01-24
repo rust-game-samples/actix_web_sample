@@ -1,12 +1,13 @@
 use crate::model::user::User;
-use actix_web::web;
 use mongodb::bson::doc;
 use mongodb::options::IndexOptions;
-use mongodb::results::InsertOneResult;
+use mongodb::results::{InsertOneResult, UpdateResult};
 use mongodb::{Client, Collection, IndexModel};
 
 pub const DB_NAME: &str = "myApp";
 pub const COLL_NAME: &str = "users";
+
+pub struct DDBError;
 
 async fn create_username_index(client: &Client) {
     let options = IndexOptions::builder().unique(true).build();
@@ -51,5 +52,22 @@ impl DDBRepository {
         let collection: Collection<User> =
             self.client.database(DB_NAME).collection(&self.table_name);
         collection.find_one(doc! { "uuid": &uuid }, None).await
+    }
+
+    pub async fn put_user(&self, uuid: String, user: User) -> mongodb::error::Result<UpdateResult> {
+        let collection: Collection<User> =
+            self.client.database(DB_NAME).collection(&self.table_name);
+        let filter = doc! {"uuid": uuid.clone()};
+        let new_doc = doc! {
+            "$set":
+                {
+                    // "uuid": uuid,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "username": user.username,
+                    // "email": user.email
+                },
+        };
+        collection.update_one(filter, new_doc, None).await
     }
 }

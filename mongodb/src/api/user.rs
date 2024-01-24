@@ -4,7 +4,7 @@ use actix_web::{
     error::ResponseError,
     get,
     http::{header::ContentType, StatusCode},
-    post,
+    post, put,
     web::Data,
     web::Json,
     web::Path,
@@ -77,5 +77,27 @@ async fn get_user(ddb_repo: Data<DDBRepository>, uuid: Path<String>) -> HttpResp
         Ok(Some(user)) => HttpResponse::Ok().json(user),
         Ok(None) => HttpResponse::NotFound().body(format!("No user found with userid {user_id}")),
         Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
+    }
+}
+
+#[put("/user/{uuid}")]
+async fn update_user(
+    ddb_repo: Data<DDBRepository>,
+    uuid: Path<String>,
+    request: Json<SubmitUserRequest>,
+) -> Result<Json<UserIdentifier>, UserError> {
+    let user_id = uuid.into_inner();
+    let user = User::from_id(
+        user_id.clone(),
+        request.first_name.clone(),
+        request.last_name.clone(),
+        request.username.clone(),
+        request.email.clone(),
+    );
+    match ddb_repo.put_user(user_id.clone(), user).await {
+        Ok(_) => Ok(Json(UserIdentifier {
+            uuid: user_id.clone(),
+        })),
+        Err(_) => Err(UserError::UserUpdateFailure),
     }
 }

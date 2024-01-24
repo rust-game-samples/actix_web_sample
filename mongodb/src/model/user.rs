@@ -24,4 +24,20 @@ impl User {
     pub fn get_uuid(&self) -> String {
         format!("{}", self.uuid)
     }
+
+    pub fn from_id(
+        uuid: String,
+        first_name: String,
+        last_name: String,
+        username: String,
+        email: String,
+    ) -> User {
+        User {
+            uuid,
+            first_name,
+            last_name,
+            username,
+            email,
+        }
+    }
 }
