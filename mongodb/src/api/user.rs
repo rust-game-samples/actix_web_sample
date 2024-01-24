@@ -69,15 +69,13 @@ async fn add_user(
     }
 }
 
-#[get("/user/{username}")]
-async fn get_user(ddb_repo: Data<DDBRepository>, username: Path<String>) -> HttpResponse {
-    let username = username.into_inner();
-    let collection = ddb_repo.get_user(username.clone()).await;
+#[get("/user/{uuid}")]
+async fn get_user(ddb_repo: Data<DDBRepository>, uuid: Path<String>) -> HttpResponse {
+    let user_id = uuid.into_inner();
+    let collection = ddb_repo.get_user(user_id.clone()).await;
     match collection {
         Ok(Some(user)) => HttpResponse::Ok().json(user),
-        Ok(None) => {
-            HttpResponse::NotFound().body(format!("No user found with username {username}"))
-        }
+        Ok(None) => HttpResponse::NotFound().body(format!("No user found with userid {user_id}")),
         Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
     }
 }

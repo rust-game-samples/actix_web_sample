@@ -40,9 +40,6 @@ impl DDBRepository {
 
     pub async fn post_user(&self, user: User) -> mongodb::error::Result<InsertOneResult> {
         let collection = self.client.database(DB_NAME).collection(&self.table_name);
-        // let result = collection.insert_one(user.into_inner(), None).await;
-        // todo: add uuid
-
         collection.insert_one(user, None).await
         // match request.send().await {
         //     Ok(_) => Ok(()),
@@ -50,11 +47,9 @@ impl DDBRepository {
         // }
     }
 
-    pub async fn get_user(&self, username: String) -> mongodb::error::Result<Option<User>> {
+    pub async fn get_user(&self, uuid: String) -> mongodb::error::Result<Option<User>> {
         let collection: Collection<User> =
             self.client.database(DB_NAME).collection(&self.table_name);
-        collection
-            .find_one(doc! { "username": &username }, None)
-            .await
+        collection.find_one(doc! { "uuid": &uuid }, None).await
     }
 }
