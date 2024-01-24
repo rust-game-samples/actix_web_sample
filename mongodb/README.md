@@ -32,7 +32,7 @@ $ curl http://127.0.0.1:8080/user/{uuid}
 `POST /user`
 
 ```shell
-curl -X POST -H "Content-Type: application/json" -d '{"first_name": "daisuke", "last_name": "takayama", "username": "takayama_daisuke", "email": "webcyou@webcyou.com"}' http://127.0.0.1:8080/user
+curl -X POST -H "Content-Type: application/json" -d '{"first_name": "daisuke", "last_name": "takayama", "username": "takayama_daisuke"}' http://127.0.0.1:8080/user
 ```
 
 ```json
@@ -64,6 +64,20 @@ curl http://127.0.0.1:8080/user/{uuid}
 
 ```shell
 {"uuid":"4b19e13e-73b4-4974-9016-eaa047fb3a63","first_name":"daisuke","last_name":"takayama","username":"takayama_daisuke","email":"webcyou@webcyou.com"}
+```
+
+## Change a User
+
+`PUT /user/uuid`
+
+```shell
+curl -X PUT -H "Content-Type: application/json" -d '{"first_name": "daisuke", "last_name": "takayama", "username": "takayama_daisuke", "email": "webcyou@webcyou.com"}' http://127.0.0.1:8080/user/{uuid}
+```
+
+### Response
+
+```shell
+{"uuid":"4b19e13e-73b4-4974-9016-eaa047fb3a63"}
 ```
 
 ## Article URL

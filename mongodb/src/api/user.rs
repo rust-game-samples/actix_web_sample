@@ -26,6 +26,13 @@ pub struct SubmitUserRequest {
     email: String,
 }
 
+#[derive(Deserialize)]
+pub struct PutUserRequest {
+    first_name: String,
+    last_name: String,
+    username: String,
+}
+
 #[derive(Debug, Display)]
 pub enum UserError {
     UserNotFound,
@@ -84,7 +91,7 @@ async fn get_user(ddb_repo: Data<DDBRepository>, uuid: Path<String>) -> HttpResp
 async fn update_user(
     ddb_repo: Data<DDBRepository>,
     uuid: Path<String>,
-    request: Json<SubmitUserRequest>,
+    request: Json<PutUserRequest>,
 ) -> Result<Json<UserIdentifier>, UserError> {
     let user_id = uuid.into_inner();
     let user = User::from_id(
@@ -92,7 +99,7 @@ async fn update_user(
         request.first_name.clone(),
         request.last_name.clone(),
         request.username.clone(),
-        request.email.clone(),
+        "".to_string(),
     );
     match ddb_repo.put_user(user_id.clone(), user).await {
         Ok(_) => Ok(Json(UserIdentifier {
