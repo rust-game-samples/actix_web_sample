@@ -57,11 +57,10 @@ impl DDBRepository {
     pub async fn put_user(&self, uuid: String, user: User) -> mongodb::error::Result<UpdateResult> {
         let collection: Collection<User> =
             self.client.database(DB_NAME).collection(&self.table_name);
-        let filter = doc! {"uuid": uuid.clone()};
+        let filter = doc! {"uuid": uuid};
         let new_doc = doc! {
             "$set":
                 {
-                    // "uuid": uuid,
                     "first_name": user.first_name,
                     "last_name": user.last_name,
                     "username": user.username,

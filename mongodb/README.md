@@ -16,10 +16,13 @@ The example code creates a client with the URI set by the MONGODB_URI environmen
 
 ### Run the example
 
+```shell
+cargo run
 ```
-$ cargo run
-$ curl http://127.0.0.1:8080/user/{username}
-{"first_name":"daisuke","last_name":"takayama","username":"takayama_daisuke","email":"webcyou@webcyou.com"}
+
+```shell
+$ curl http://127.0.0.1:8080/user/{uuid}
+{"uuid":"4b19e13e-73b4-4974-9016-eaa047fb3a63","first_name":"daisuke","last_name":"takayama","username":"takayama_daisuke","email":"webcyou@webcyou.com"}
 ```
 
 ## Create a new User
@@ -28,7 +31,7 @@ $ curl http://127.0.0.1:8080/user/{username}
 
 `POST /user`
 
-```
+```shell
 curl -X POST -H "Content-Type: application/json" -d '{"first_name": "daisuke", "last_name": "takayama", "username": "takayama_daisuke", "email": "webcyou@webcyou.com"}' http://127.0.0.1:8080/user
 ```
 
@@ -43,6 +46,25 @@ curl -X POST -H "Content-Type: application/json" -d '{"first_name": "daisuke", "
 
 ### Response
 
+```shell
+{"uuid":"4b19e13e-73b4-4974-9016-eaa047fb3a63"}
+```
+
+## Get a specific User
+
+### Request
+
+`GET /user/uuid`
+
+```shell
+curl http://127.0.0.1:8080/user/{uuid}
+```
+
+### Response
+
+```shell
+{"uuid":"4b19e13e-73b4-4974-9016-eaa047fb3a63","first_name":"daisuke","last_name":"takayama","username":"takayama_daisuke","email":"webcyou@webcyou.com"}
+```
 
 ## Article URL
 
