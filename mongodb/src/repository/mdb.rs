@@ -7,7 +7,7 @@ use mongodb::{Client, Collection, IndexModel};
 pub const DB_NAME: &str = "myApp";
 pub const COLL_NAME: &str = "users";
 
-pub struct DDBError;
+pub struct MDBError;
 
 async fn create_username_index(client: &Client) {
     let options = IndexOptions::builder().unique(true).build();
@@ -24,19 +24,19 @@ async fn create_username_index(client: &Client) {
 }
 
 #[derive(Clone)]
-pub struct DDBRepository {
+pub struct MDBRepository {
     pub client: Client,
     pub table_name: String,
 }
 
-impl DDBRepository {
-    pub async fn init(table_name: String) -> DDBRepository {
+impl MDBRepository {
+    pub async fn init(table_name: String) -> MDBRepository {
         let uri =
             std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
         let client = Client::with_uri_str(uri).await.expect("failed to connect");
         create_username_index(&client).await;
 
-        DDBRepository { table_name, client }
+        MDBRepository { table_name, client }
     }
 
     pub async fn post_user(&self, user: User) -> mongodb::error::Result<InsertOneResult> {

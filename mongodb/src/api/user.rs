@@ -1,5 +1,5 @@
 use crate::model::user::User;
-use crate::repository::ddb::DDBRepository;
+use crate::repository::mdb::MDBRepository;
 use actix_web::{
     error::ResponseError,
     get,
@@ -59,7 +59,7 @@ impl ResponseError for UserError {
 
 #[post("/user")]
 async fn add_user(
-    ddb_repo: Data<DDBRepository>,
+    ddb_repo: Data<MDBRepository>,
     request: Json<SubmitUserRequest>,
 ) -> Result<Json<UserIdentifier>, UserError> {
     let user = User::new(
@@ -77,7 +77,7 @@ async fn add_user(
 }
 
 #[get("/user/{uuid}")]
-async fn get_user(ddb_repo: Data<DDBRepository>, uuid: Path<String>) -> HttpResponse {
+async fn get_user(ddb_repo: Data<MDBRepository>, uuid: Path<String>) -> HttpResponse {
     let user_id = uuid.into_inner();
     let collection = ddb_repo.get_user(user_id.clone()).await;
     match collection {
@@ -89,7 +89,7 @@ async fn get_user(ddb_repo: Data<DDBRepository>, uuid: Path<String>) -> HttpResp
 
 #[put("/user/{uuid}")]
 async fn update_user(
-    ddb_repo: Data<DDBRepository>,
+    ddb_repo: Data<MDBRepository>,
     uuid: Path<String>,
     request: Json<PutUserRequest>,
 ) -> Result<Json<UserIdentifier>, UserError> {
