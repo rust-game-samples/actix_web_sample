@@ -40,4 +40,14 @@ impl User {
             email,
         }
     }
+
+    pub fn from_put(uuid: String, first_name: String, last_name: String, username: String) -> User {
+        User {
+            uuid,
+            first_name,
+            last_name,
+            username,
+            email: "".to_string(),
+        }
+    }
 }

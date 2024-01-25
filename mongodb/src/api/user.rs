@@ -94,12 +94,11 @@ async fn update_user(
     request: Json<PutUserRequest>,
 ) -> Result<Json<UserIdentifier>, UserError> {
     let user_id = uuid.into_inner();
-    let user = User::from_id(
+    let user = User::from_put(
         user_id.clone(),
         request.first_name.clone(),
         request.last_name.clone(),
         request.username.clone(),
-        "".to_string(),
     );
     match ddb_repo.put_user(user_id.clone(), user).await {
         Ok(_) => Ok(Json(UserIdentifier {
