@@ -1,8 +1,11 @@
 use crate::model::user::User;
 use mongodb::bson::doc;
+use mongodb::bson::extjson::de::Error;
 use mongodb::options::IndexOptions;
-use mongodb::results::{DeleteResult, InsertOneResult, UpdateResult};
-use mongodb::{Client, Collection, IndexModel};
+use mongodb::{
+    results::{DeleteResult, InsertOneResult, UpdateResult},
+    Client, Collection, IndexModel,
+};
 
 pub const DB_NAME: &str = "myApp";
 pub const COLL_NAME: &str = "users";
@@ -27,6 +30,7 @@ async fn create_username_index(client: &Client) {
 pub struct MDBRepository {
     pub client: Client,
     pub table_name: String,
+    col: Collection<User>,
 }
 
 impl MDBRepository {
@@ -35,17 +39,23 @@ impl MDBRepository {
             std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
         let client = Client::with_uri_str(uri).await.expect("failed to connect");
         create_username_index(&client).await;
+        let col: Collection<User> = client.database(DB_NAME).collection(&table_name.clone());
 
-        MDBRepository { table_name, client }
+        MDBRepository {
+            table_name,
+            client,
+            col,
+        }
     }
 
-    pub async fn post_user(&self, user: User) -> mongodb::error::Result<InsertOneResult> {
-        let collection = self.client.database(DB_NAME).collection(&self.table_name);
-        collection.insert_one(user, None).await
-        // match request.send().await {
-        //     Ok(_) => Ok(()),
-        //     Err(_) => Err(DDBError)
-        // }
+    pub async fn post_user(&self, user: User) -> Result<InsertOneResult, Error> {
+        // let collection = self.client.database(DB_NAME).collection(&self.table_name);
+        let user = self
+            .col
+            .insert_one(user, None)
+            .await
+            .expect("Error creating user");
+        Ok(user)
     }
 
     pub async fn get_user(&self, uuid: String) -> mongodb::error::Result<Option<User>> {

@@ -113,12 +113,10 @@ async fn update_user(
 pub async fn delete_user(
     ddb_repo: Data<MDBRepository>,
     uuid: Path<String>,
-) -> Result<Json<UserIdentifier>, UserError> {
+) -> Result<String, UserError> {
     let user_id = uuid.into_inner();
     match ddb_repo.delete_user(user_id.clone()).await {
-        Ok(_) => Ok(Json(UserIdentifier {
-            uuid: user_id.clone(),
-        })),
+        Ok(_) => Ok("deleted".to_string()),
         Err(_) => Err(UserError::UserUpdateFailure),
     }
 }
