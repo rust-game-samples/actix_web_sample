@@ -1,7 +1,7 @@
 use crate::model::user::User;
 use mongodb::bson::doc;
 use mongodb::options::IndexOptions;
-use mongodb::results::{InsertOneResult, UpdateResult};
+use mongodb::results::{DeleteResult, InsertOneResult, UpdateResult};
 use mongodb::{Client, Collection, IndexModel};
 
 pub const DB_NAME: &str = "myApp";
@@ -68,5 +68,12 @@ impl MDBRepository {
                 },
         };
         collection.update_one(filter, new_doc, None).await
+    }
+
+    pub async fn delete_user(&self, uuid: String) -> mongodb::error::Result<DeleteResult> {
+        let collection: Collection<User> =
+            self.client.database(DB_NAME).collection(&self.table_name);
+        let filter = doc! {"uuid": uuid};
+        collection.delete_one(filter, None).await
     }
 }

@@ -1,6 +1,7 @@
 use crate::model::user::User;
 use crate::repository::mdb::MDBRepository;
 use actix_web::{
+    delete,
     error::ResponseError,
     get,
     http::{header::ContentType, StatusCode},
@@ -101,6 +102,20 @@ async fn update_user(
         request.username.clone(),
     );
     match ddb_repo.put_user(user_id.clone(), user).await {
+        Ok(_) => Ok(Json(UserIdentifier {
+            uuid: user_id.clone(),
+        })),
+        Err(_) => Err(UserError::UserUpdateFailure),
+    }
+}
+
+#[delete("/user/{id}")]
+pub async fn delete_user(
+    ddb_repo: Data<MDBRepository>,
+    uuid: Path<String>,
+) -> Result<Json<UserIdentifier>, UserError> {
+    let user_id = uuid.into_inner();
+    match ddb_repo.delete_user(user_id.clone()).await {
         Ok(_) => Ok(Json(UserIdentifier {
             uuid: user_id.clone(),
         })),
