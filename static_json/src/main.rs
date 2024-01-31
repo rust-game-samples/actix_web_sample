@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Read;
 use std::collections::HashMap;
+use actix_web::{web::{Data, Path, get}, App, HttpResponse, HttpServer, Responder};
 
 #[derive(Serialize, Deserialize)]
 struct User {
@@ -20,9 +21,7 @@ fn load_users() -> HashMap<u32, User> {
     users.into_iter().map(|user| (user.id, user)).collect()
 }
 
-use actix_web::{web, App, HttpResponse, HttpServer, Responder};
-
-async fn get_user(id: web::Path<u32>, data: web::Data<HashMap<u32, User>>) -> impl Responder {
+async fn get_user(id: Path<u32>, data: Data<HashMap<u32, User>>) -> impl Responder {
     if let Some(user) = data.get(&id.into_inner()) {
         HttpResponse::Ok().json(user)
     } else {
@@ -32,11 +31,11 @@ async fn get_user(id: web::Path<u32>, data: web::Data<HashMap<u32, User>>) -> im
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let users = web::Data::new(load_users());
+    let users = Data::new(load_users());
     HttpServer::new(move || {
         App::new()
             .app_data(users.clone())
-            .route("/user/{id}", web::get().to(get_user))
+            .route("/user/{id}", get().to(get_user))
     })
     .bind("127.0.0.1:8080")?
     .run()
