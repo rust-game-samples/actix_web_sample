@@ -71,7 +71,7 @@ Authorization [JWT token （token）]
 ### Response
 
 ```
-Authorized Access Success!
+Authorized Access Success! Hello World!
 ```
 
 ## Author

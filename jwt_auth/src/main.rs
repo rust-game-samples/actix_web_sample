@@ -1,6 +1,8 @@
 mod api;
 mod model;
 mod utils;
+mod constants;
+mod error;
 
 use actix_web::{web, App, HttpServer};
 use api::token::{create_token, refresh_token, hello};
