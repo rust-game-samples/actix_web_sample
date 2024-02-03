@@ -1,63 +1,45 @@
-use actix_web::{get, post, web, HttpRequest, HttpResponse, Responder};
-use uuid::Uuid;
-use jwt_simple::prelude::*;
+use actix_web::{get, post, web, HttpRequest, HttpResponse};
 use crate::constants::*;
-use crate::model::token::{CreateTokenRequest, TokenClaims, CreateTokenResponse, CreateRefreshTokenResponse};
-use crate::utils::token::{get_token, claims_verify_token};
+use crate::model::token::{CreateTokenRequest, CreateTokenResponse, CreateRefreshTokenResponse};
+use crate::utils::token::{get_token, claims_verify_token, create_access_token, create_refresh_token};
 use crate::error::ServiceError;
 
 #[post("/")]
-async fn create_token(data: web::Json<CreateTokenRequest>) -> impl Responder {
+async fn create_token(data: web::Json<CreateTokenRequest>) -> Result<HttpResponse, ServiceError> {
     if !(data.username == "daisuke" && data.password == "1234") {
-        return HttpResponse::BadRequest().body("user does not exist or password is wrong");
+        return Err(ServiceError::BadRequest {
+            error_message: "user does not exist or password is wrong".to_string(),
+        });
     }
-    let token_key = HS256Key::from_bytes(b"secret");
+    let access_token = create_access_token()?;
+    let refresh = create_refresh_token()?;
 
-    let claims =
-        Claims::with_custom_claims(TokenClaims { refresh: false }, Duration::from_mins(15))
-            .with_subject(1)
-            .with_jwt_id(Uuid::new_v4().to_string());
-    let access = token_key.authenticate(claims).unwrap();
-
-    let claims =
-        Claims::with_custom_claims(TokenClaims { refresh: true }, Duration::from_hours(24))
-            .with_subject(1)
-            .with_jwt_id(Uuid::new_v4().to_string());
-    let refresh = token_key.authenticate(claims).unwrap();
-
-    HttpResponse::Ok().json(CreateTokenResponse {
-        token: access,
+    Ok(HttpResponse::Ok().json(CreateTokenResponse {
+        token: access_token,
         refresh_token: refresh,
-    })
+    }))
 }
 
 #[post("/refresh")]
 async fn refresh_token(req: HttpRequest) -> Result<HttpResponse, ServiceError> {
     let token = get_token(req)?;
     let claims = claims_verify_token(&token)?;
-    let token_key = HS256Key::from_bytes(b"secret");
-
     if !claims.custom.refresh {
         return Err(ServiceError::BadRequest {
             error_message: MESSAGE_REFRESH_TOKEN_ERROR.to_string(),
         });
     }
+    let access_token = create_access_token()?;
 
-    let claims =
-        Claims::with_custom_claims(TokenClaims { refresh: false }, Duration::from_mins(15))
-            .with_subject(1)
-            .with_jwt_id(Uuid::new_v4().to_string());
-    let token = token_key.authenticate(claims).unwrap();
-    Ok(HttpResponse::Ok().json(CreateRefreshTokenResponse { token: token }))
+    Ok(HttpResponse::Ok().json(CreateRefreshTokenResponse { token: access_token }))
 }
 
 #[get("/hello")]
 async fn hello(req: HttpRequest) -> Result<HttpResponse, ServiceError> {
     let token = get_token(req)?;
     let claims = claims_verify_token(&token)?;
-
     if claims.custom.refresh {
-        return Err(ServiceError::InternalServerError {
+        return Err(ServiceError::BadRequest {
             error_message: MESSAGE_REFRESH_TOKEN_ERROR.to_string(),
         });
     }
