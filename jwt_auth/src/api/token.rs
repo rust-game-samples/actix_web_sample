@@ -11,27 +11,27 @@ async fn create_token(data: web::Json<CreateTokenRequest>) -> Result<HttpRespons
             error_message: "user does not exist or password is wrong".to_string(),
         });
     }
-    let access_token = create_access_token()?;
+    let token = create_access_token()?;
     let refresh = create_refresh_token()?;
 
     Ok(HttpResponse::Ok().json(CreateTokenResponse {
-        token: access_token,
+        token,
         refresh_token: refresh,
     }))
 }
 
 #[post("/refresh")]
 async fn refresh_token(req: HttpRequest) -> Result<HttpResponse, ServiceError> {
-    let token = get_token(req)?;
-    let claims = claims_verify_token(&token)?;
+    let request_token = get_token(req)?;
+    let claims = claims_verify_token(&request_token)?;
     if !claims.custom.refresh {
         return Err(ServiceError::BadRequest {
             error_message: MESSAGE_REFRESH_TOKEN_ERROR.to_string(),
         });
     }
-    let access_token = create_access_token()?;
+    let token = create_access_token()?;
 
-    Ok(HttpResponse::Ok().json(CreateRefreshTokenResponse { token: access_token }))
+    Ok(HttpResponse::Ok().json(CreateRefreshTokenResponse { token }))
 }
 
 #[get("/hello")]
