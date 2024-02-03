@@ -1,0 +1,27 @@
+[package]
+name = "jwt_auth"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+actix-web = "4"
+actix-web-httpauth = "*"
+jwt-simple = "0.10"
+rust-crypto = "0.2"
+derive_more = "0.99.17"
+chrono = "0.4.31"
+
+[dependencies.rusqlite]
+version = "*"
+features = ["bundled"]
+
+[dependencies.uuid]
+version = "1.2.2"
+features = [
+    "v4",
+    "fast-rng",
+    "macro-diagnostics",
+]
