@@ -1,18 +1,23 @@
-use actix_web::{HttpRequest, http::header::HeaderValue};
-use jwt_simple::prelude::*;
-use uuid::Uuid;
 use crate::constants::*;
 use crate::error::ServiceError;
 use crate::model::token::TokenClaims;
+use actix_web::{http::header::HeaderValue, HttpRequest};
+use jwt_simple::prelude::*;
+use uuid::Uuid;
 
 fn create_token_key() -> HS256Key {
-    HS256Key::from_bytes(b"secret")
+    HS256Key::from_bytes(b"your_secret_key")
 }
 
 fn create_custom_claims(is_refresh: bool, duration: Duration) -> JWTClaims<TokenClaims> {
-    Claims::with_custom_claims(TokenClaims { refresh: is_refresh }, duration)
-        .with_subject(1)
-        .with_jwt_id(Uuid::new_v4().to_string())
+    Claims::with_custom_claims(
+        TokenClaims {
+            refresh: is_refresh,
+        },
+        duration,
+    )
+    .with_subject(1)
+    .with_jwt_id(Uuid::new_v4().to_string())
 }
 
 pub fn get_token(req: HttpRequest) -> Result<String, ServiceError> {

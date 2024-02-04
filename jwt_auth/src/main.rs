@@ -1,11 +1,11 @@
 mod api;
-mod model;
-mod utils;
 mod constants;
 mod error;
+mod model;
+mod utils;
 
 use actix_web::{web, App, HttpServer};
-use api::token::{create_token, refresh_token, hello};
+use api::token::{create_token, hello, refresh_token};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -16,10 +16,9 @@ async fn main() -> std::io::Result<()> {
                     .service(create_token)
                     .service(refresh_token),
             )
-            .service(web::scope("/user"))
             .service(hello)
     })
-        .bind(("127.0.0.1", 8080))?
-        .run()
-        .await
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
 }
