@@ -1,6 +1,6 @@
-# Actix Web - MongoDB API
+# Actix Web - MongoDB User JWT Auth API
 
-Refactoring based on [this](https://github.com/actix/examples/tree/master/databases/mongodb) sample.
+Combines [simple JWT authentication](https://github.com/rust-game-samples/actix_web_sample/tree/main/jwt_auth) with a [user operation API](https://github.com/rust-game-samples/actix_web_sample/tree/main/mongodb).
 
 Simple example of MongoDB usage with Actix Web. For more information on the MongoDB Rust driver, visit the [documentation](https://docs.rs/mongodb/2.0.0/mongodb/index.html) and [source code](https://github.com/mongodb/mongo-rust-driver).
 
@@ -13,10 +13,6 @@ Visit the [MongoDB Download Center](https://www.mongodb.com/try) for instruction
 ### Set an environment variable
 
 The example code creates a client with the URI set by the MONGODB_URI environment variable. The default URI for a standalone mongod running on localhost is "mongodb://localhost:27017". For more information on MongoDB URIs, visit the connection string entry in the MongoDB manual.
-
-
-curl -X POST 'http://127.0.0.1:8080/register' -H "Content-Type: application/json" -d '{"email": "webcyou@webcyou.com", "password": "1234"}'
-
 
 ### Run the example
 
