@@ -1,4 +1,3 @@
-use crate::constants::MESSAGE_REFRESH_TOKEN_ERROR;
 use crate::error::{ServiceError, UserError};
 use crate::model::token::CreateTokenResponse;
 use crate::model::user::{RegisterUser, User};
@@ -71,6 +70,7 @@ async fn login_user(
         Ok(user) => {
             let token = create_access_token(user.get_uuid())?;
             let refresh = create_refresh_token(user.get_uuid())?;
+
             Ok(HttpResponse::Ok().json(CreateTokenResponse {
                 token,
                 refresh_token: refresh,
@@ -82,7 +82,7 @@ async fn login_user(
     }
 }
 
-#[get("/user/{uuid}")]
+#[get("/{uuid}")]
 async fn get_user(ddb_repo: Data<MDBRepository>, uuid: Path<String>) -> HttpResponse {
     let user_id = uuid.into_inner();
     let collection = ddb_repo.get_user(user_id.clone()).await;
@@ -93,7 +93,7 @@ async fn get_user(ddb_repo: Data<MDBRepository>, uuid: Path<String>) -> HttpResp
     }
 }
 
-#[put("/user/{uuid}")]
+#[put("/{uuid}")]
 async fn update_user(
     ddb_repo: Data<MDBRepository>,
     uuid: Path<String>,
@@ -114,7 +114,7 @@ async fn update_user(
     }
 }
 
-#[delete("/user/{id}")]
+#[delete("/{id}")]
 pub async fn delete_user(
     ddb_repo: Data<MDBRepository>,
     uuid: Path<String>,

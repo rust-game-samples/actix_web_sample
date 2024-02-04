@@ -1,3 +1,4 @@
+use crate::model::token::ResponseBody;
 use actix_web::{
     http::{header::ContentType, StatusCode},
     HttpResponse, ResponseError,
@@ -31,7 +32,7 @@ impl ResponseError for ServiceError {
     fn error_response(&self) -> HttpResponse {
         HttpResponse::build(self.status_code())
             .insert_header(ContentType::json())
-            .json(&self.to_string())
+            .json(ResponseBody::new(&self.to_string(), String::from("")))
     }
 }
 

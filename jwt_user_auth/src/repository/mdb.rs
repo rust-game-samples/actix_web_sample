@@ -51,13 +51,15 @@ impl MDBRepository {
         }
     }
 
-    pub async fn post_user(&self, user: RegisterUser) -> Result<InsertOneResult, Error> {
-        let user = self
-            .col
-            .insert_one(user, None)
-            .await
-            .expect("Error creating user");
-        Ok(user)
+    pub async fn post_user(&self, user: RegisterUser) -> Result<InsertOneResult, ServiceError> {
+        let result = self.col.insert_one(user, None).await;
+
+        match result {
+            Ok(user_result) => Ok(user_result),
+            Err(_) => Err(ServiceError::InternalServerError {
+                error_message: "Error creating user".to_string(),
+            }),
+        }
     }
 
     pub async fn login_user(&self, email: &str, password: &str) -> Result<User, ServiceError> {
