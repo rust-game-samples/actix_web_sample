@@ -79,7 +79,7 @@ curl -X POST http://127.0.0.1:8080/login -H "Content-Type: application/json" -d 
 `GET /user/uuid`
 
 ```shell
-curl http://127.0.0.1:8080/user/{uuid}
+curl -H GET 'http://127.0.0.1:8080/user/{uuid}' -H 'Content-Type: application/json' -H 'Authorization: Bearer [JWT Token (token)]'
 ```
 
 ### Response

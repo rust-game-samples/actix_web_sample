@@ -6,7 +6,7 @@ use jwt_simple::prelude::*;
 use uuid::Uuid;
 
 fn create_token_key() -> HS256Key {
-    HS256Key::from_bytes(b"secret")
+    HS256Key::from_bytes(b"your_secret_key")
 }
 
 fn create_custom_claims(

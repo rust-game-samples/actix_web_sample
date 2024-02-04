@@ -1,8 +1,11 @@
+use crate::constants::*;
 use crate::error::{ServiceError, UserError};
 use crate::model::token::CreateTokenResponse;
 use crate::model::user::{RegisterUser, User};
 use crate::repository::mdb::MDBRepository;
-use crate::utils::token::{create_access_token, create_refresh_token};
+use crate::utils::token::{
+    claims_verify_token, create_access_token, create_refresh_token, get_token,
+};
 use actix_web::{
     delete,
     error::ResponseError,
@@ -12,7 +15,7 @@ use actix_web::{
     web::Data,
     web::Json,
     web::Path,
-    HttpResponse,
+    HttpRequest, HttpResponse,
 };
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
@@ -70,7 +73,6 @@ async fn login_user(
         Ok(user) => {
             let token = create_access_token(user.get_uuid())?;
             let refresh = create_refresh_token(user.get_uuid())?;
-
             Ok(HttpResponse::Ok().json(CreateTokenResponse {
                 token,
                 refresh_token: refresh,
@@ -83,13 +85,39 @@ async fn login_user(
 }
 
 #[get("/{uuid}")]
-async fn get_user(ddb_repo: Data<MDBRepository>, uuid: Path<String>) -> HttpResponse {
+async fn get_user(
+    ddb_repo: Data<MDBRepository>,
+    uuid: Path<String>,
+    request: HttpRequest,
+) -> Result<HttpResponse, ServiceError> {
     let user_id = uuid.into_inner();
-    let collection = ddb_repo.get_user(user_id.clone()).await;
+
+    let token = get_token(request)?;
+    let claims = claims_verify_token(&token)?;
+
+    if claims.custom.refresh {
+        return Err(ServiceError::BadRequest {
+            error_message: MESSAGE_REFRESH_TOKEN_ERROR.to_string(),
+        });
+    }
+
+    let sub_uuid = claims.subject.unwrap();
+    if sub_uuid.clone() != user_id {
+        return Err(ServiceError::BadRequest {
+            error_message: MESSAGE_BAD_REQUEST.to_string(),
+        });
+    }
+
+    let collection = ddb_repo.get_user(sub_uuid.clone()).await;
+
     match collection {
-        Ok(Some(user)) => HttpResponse::Ok().json(user),
-        Ok(None) => HttpResponse::NotFound().body(format!("No user found with userid")),
-        Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
+        Ok(Some(user)) => Ok(HttpResponse::Ok().json(user)),
+        Ok(None) => Err(ServiceError::NotFound {
+            error_message: "No user found with userid".to_string(),
+        }),
+        Err(err) => Err(ServiceError::InternalServerError {
+            error_message: err.to_string(),
+        }),
     }
 }
 
