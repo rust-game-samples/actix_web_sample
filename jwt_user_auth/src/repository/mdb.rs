@@ -1,11 +1,11 @@
 use crate::constants::*;
-use crate::error::{ServiceError, UserError};
+use crate::error::ServiceError;
 use crate::model::user::{RegisterUser, User};
 use bcrypt::verify;
 use mongodb::bson::doc;
 use mongodb::options::IndexOptions;
 use mongodb::{
-    results::{DeleteResult, InsertOneResult, UpdateResult},
+    results::{DeleteResult, InsertOneResult},
     Client, Collection, IndexModel,
 };
 
@@ -93,16 +93,16 @@ impl MDBRepository {
                 error_message: MESSAGE_BAD_REQUEST.to_string(),
             }),
             Err(_) => Err(ServiceError::InternalServerError {
-                error_message: "".to_string(),
+                error_message: MESSAGE_INTERNAL_SERVER_ERROR.to_string(),
             }),
         }
     }
 
-    pub async fn put_user(&self, uuid: String, user: User) -> mongodb::error::Result<UpdateResult> {
+    pub async fn put_user(&self, uuid: String, user: User) -> Result<User, ServiceError> {
         let collection: Collection<User> =
             self.client.database(DB_NAME).collection(&self.table_name);
         let filter = doc! {"uuid": uuid};
-        let new_doc = doc! {
+        let update = doc! {
             "$set":
                 {
                     "first_name": user.first_name,
@@ -111,7 +111,23 @@ impl MDBRepository {
                     // "email": user.email
                 },
         };
-        collection.update_one(filter, new_doc, None).await
+
+        let options = mongodb::options::FindOneAndUpdateOptions::builder()
+            .return_document(mongodb::options::ReturnDocument::After)
+            .build();
+
+        match collection
+            .find_one_and_update(filter, update, options)
+            .await
+        {
+            Ok(Some(updated_user)) => Ok(updated_user),
+            Ok(None) => Err(ServiceError::NotFound {
+                error_message: MESSAGE_CAN_NOT_UPDATE_DATA.to_string(),
+            }),
+            Err(_) => Err(ServiceError::InternalServerError {
+                error_message: MESSAGE_INTERNAL_SERVER_ERROR.to_string(),
+            }),
+        }
     }
 
     pub async fn delete_user(&self, uuid: String) -> mongodb::error::Result<DeleteResult> {

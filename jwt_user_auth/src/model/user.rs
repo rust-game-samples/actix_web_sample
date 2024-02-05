@@ -1,6 +1,20 @@
+use actix_web::web::Json;
 use bcrypt::{hash, DEFAULT_COST};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+
+#[derive(Deserialize)]
+pub struct SubmitUserRequest {
+    pub email: String,
+    pub password: String,
+}
+
+#[derive(Deserialize)]
+pub struct PutUserRequest {
+    pub first_name: String,
+    pub last_name: String,
+    pub username: String,
+}
 
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct RegisterUser {
@@ -52,28 +66,12 @@ impl User {
         }
     }
 
-    pub fn from_id(
-        uuid: String,
-        first_name: String,
-        last_name: String,
-        username: String,
-        email: String,
-    ) -> User {
+    pub fn from_put(uuid: String, put_user: Json<PutUserRequest>) -> User {
         User {
             uuid,
-            first_name,
-            last_name,
-            username,
-            email,
-        }
-    }
-
-    pub fn from_put(uuid: String, first_name: String, last_name: String, username: String) -> User {
-        User {
-            uuid,
-            first_name,
-            last_name,
-            username,
+            first_name: put_user.first_name.clone(),
+            last_name: put_user.last_name.clone(),
+            username: put_user.username.clone(),
             email: "".to_string(),
         }
     }

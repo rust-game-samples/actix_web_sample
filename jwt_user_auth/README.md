@@ -55,9 +55,10 @@ cargo run
 curl -X POST http://127.0.0.1:8080/register -H "Content-Type: application/json" -d '{"email":"webcyou@webcyou.com", "password": "1234"}'
 ```
 
+**request body example**
 ```json
 {
-  "email":"webcyou@webcyou.com",
+  "email": "webcyou@webcyou.com",
   "password": "1234"
 }
 ```
@@ -66,7 +67,7 @@ curl -X POST http://127.0.0.1:8080/register -H "Content-Type: application/json" 
 
 ```json
 {
-  "message":"Signup successfully",
+  "message": "Signup successfully",
   "data": {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDY4NDEwODUsImV4cCI6MTcwNjg0MTE0NSwibmJmIjoxNzA2ODQxMDg1LCJzdWIiOiIxIiwianRpIjoiOGNhZDk2MmItYWVhYy00MmMzLWFjNTgtOGYwNTdkODg0YmQzIiwicmVmcmVzaCI6ZmFsc2V9.mm1hUxevMWoWaNhSCfzKEmry6117Fc355AMxnSZ6E6A",
     "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDY4NDEwODUsImV4cCI6MTcwNjkyNzQ4NSwibmJmIjoxNzA2ODQxMDg1LCJzdWIiOiIxIiwianRpIjoiZWMxMmRhZTItZWE1Ni00NGZjLWI3ZmQtNTk4NDkyMjc3YmExIiwicmVmcmVzaCI6dHJ1ZX0.OLyYaST_mkIMbZYUU6-QCfT6dYT3URmoUERGQJ5Kwl4"
@@ -83,6 +84,8 @@ curl -X POST http://127.0.0.1:8080/register -H "Content-Type: application/json" 
 ```shell
 curl -X POST http://127.0.0.1:8080/login -H "Content-Type: application/json" -d '{"email":"webcyou@webcyou.com", "password": "1234"}'
 ```
+
+**request body example**
 
 ```json
 {
@@ -115,7 +118,7 @@ curl -H GET http://127.0.0.1:8080/user/{uuid} -H 'Content-Type: application/json
 
 ### Response
 
-```shell
+```json
 {
   "message": "ok",
   "data": { 
@@ -133,13 +136,22 @@ curl -H GET http://127.0.0.1:8080/user/{uuid} -H 'Content-Type: application/json
 `PUT /user/uuid`
 
 ```shell
-curl -X PUT -H "Content-Type: application/json" -d '{"first_name": "daisuke", "last_name": "takayama", "username": "takayama_daisuke", "email": "webcyou@webcyou.com"}' http://127.0.0.1:8080/user/{uuid}
+curl -X PUT http://127.0.0.1:8080/user/{uuid} -H "Content-Type: application/json" -H 'Authorization: Bearer [JWT Token (token)]' -d '{"first_name": "daisuke", "last_name": "takayama", "username": "takayama_daisuke", "email": "webcyou@webcyou.com"}'
 ```
 
 ### Response
 
-```shell
-
+```json
+{
+  "message": "ok",
+  "data": {
+    "uuid": "0b957f89-99ec-4153-a872-888763f9bf2d",
+    "first_name": "daisuke",
+    "last_name": "takayama",
+    "username": "takayama_daisuke",
+    "email": "webcyou@webcyou.com"
+  }
+}
 ```
 
 ## DELETE a User
@@ -147,12 +159,12 @@ curl -X PUT -H "Content-Type: application/json" -d '{"first_name": "daisuke", "l
 `PUT /user/uuid`
 
 ```shell
-curl -X DELETE http://127.0.0.1:8080/user/{uuid} -H "Content-Type: application/json"
+curl -X DELETE http://127.0.0.1:8080/user/{uuid} -H "Content-Type: application/json" -H 'Authorization: Bearer [JWT Token (token)]'
 ```
 
 ### Response
 
-```shell
+```json
 {"uuid":"4b19e13e-73b4-4974-9016-eaa047fb3a63"}
 ```
 
