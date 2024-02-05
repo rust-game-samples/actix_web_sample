@@ -1,4 +1,4 @@
-use crate::model::token::ResponseBody;
+use crate::model::response::ResponseBody;
 use actix_web::{
     http::{header::ContentType, StatusCode},
     HttpResponse, ResponseError,

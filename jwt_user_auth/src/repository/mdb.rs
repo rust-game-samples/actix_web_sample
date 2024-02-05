@@ -1,8 +1,8 @@
+use crate::constants::*;
 use crate::error::{ServiceError, UserError};
 use crate::model::user::{RegisterUser, User};
 use bcrypt::verify;
 use mongodb::bson::doc;
-use mongodb::bson::extjson::de::Error;
 use mongodb::options::IndexOptions;
 use mongodb::{
     results::{DeleteResult, InsertOneResult, UpdateResult},
@@ -11,8 +11,6 @@ use mongodb::{
 
 pub const DB_NAME: &str = "userJWT";
 pub const COLL_NAME: &str = "users";
-
-pub struct MDBError;
 
 async fn create_username_index(client: &Client) {
     let options = IndexOptions::builder().unique(true).build();
@@ -57,7 +55,7 @@ impl MDBRepository {
         match result {
             Ok(user_result) => Ok(user_result),
             Err(_) => Err(ServiceError::InternalServerError {
-                error_message: "Error creating user".to_string(),
+                error_message: MESSAGE_SIGNUP_FAILED.to_string(),
             }),
         }
     }
@@ -72,12 +70,12 @@ impl MDBRepository {
                     Ok(User::from_register_data(user_data))
                 } else {
                     Err(ServiceError::Unauthorized {
-                        error_message: "Invalid credentials".to_string(),
+                        error_message: MESSAGE_LOGIN_FAILED.to_string(),
                     })
                 }
             }
             Ok(None) => Err(ServiceError::Unauthorized {
-                error_message: "Invalid credentials".to_string(),
+                error_message: MESSAGE_LOGIN_FAILED.to_string(),
             }),
             Err(_) => Err(ServiceError::InternalServerError {
                 error_message: "".to_string(),

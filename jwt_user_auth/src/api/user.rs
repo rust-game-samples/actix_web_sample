@@ -1,5 +1,6 @@
 use crate::constants::*;
 use crate::error::{ServiceError, UserError};
+use crate::model::response::ResponseBody;
 use crate::model::token::CreateTokenResponse;
 use crate::model::user::{RegisterUser, User};
 use crate::repository::mdb::MDBRepository;
@@ -42,10 +43,14 @@ async fn register_user(
         Ok(_) => {
             let token = create_access_token(uuid.clone())?;
             let refresh = create_refresh_token(uuid.clone())?;
-            Ok(HttpResponse::Ok().json(CreateTokenResponse {
-                token,
-                refresh_token: refresh,
-            }))
+
+            Ok(HttpResponse::Ok().json(ResponseBody::new(
+                MESSAGE_SIGNUP_SUCCESS,
+                CreateTokenResponse {
+                    token,
+                    refresh_token: refresh,
+                },
+            )))
         }
         Err(err) => Err(ServiceError::InternalServerError {
             error_message: err.to_string(),
@@ -64,10 +69,14 @@ async fn login_user(
         Ok(user) => {
             let token = create_access_token(user.get_uuid())?;
             let refresh = create_refresh_token(user.get_uuid())?;
-            Ok(HttpResponse::Ok().json(CreateTokenResponse {
-                token,
-                refresh_token: refresh,
-            }))
+
+            Ok(HttpResponse::Ok().json(ResponseBody::new(
+                MESSAGE_LOGIN_SUCCESS,
+                CreateTokenResponse {
+                    token,
+                    refresh_token: refresh,
+                },
+            )))
         }
         Err(err) => Err(ServiceError::InternalServerError {
             error_message: err.to_string(),

@@ -38,16 +38,6 @@ pub struct User {
 }
 
 impl User {
-    pub fn new(first_name: String, last_name: String, username: String, email: String) -> User {
-        User {
-            uuid: Uuid::new_v4().to_string(),
-            first_name,
-            last_name,
-            username,
-            email,
-        }
-    }
-
     pub fn get_uuid(&self) -> String {
         format!("{}", self.uuid)
     }

@@ -66,8 +66,11 @@ curl -X POST http://127.0.0.1:8080/register -H "Content-Type: application/json" 
 
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDY4NDEwODUsImV4cCI6MTcwNjg0MTE0NSwibmJmIjoxNzA2ODQxMDg1LCJzdWIiOiIxIiwianRpIjoiOGNhZDk2MmItYWVhYy00MmMzLWFjNTgtOGYwNTdkODg0YmQzIiwicmVmcmVzaCI6ZmFsc2V9.mm1hUxevMWoWaNhSCfzKEmry6117Fc355AMxnSZ6E6A",
-  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDY4NDEwODUsImV4cCI6MTcwNjkyNzQ4NSwibmJmIjoxNzA2ODQxMDg1LCJzdWIiOiIxIiwianRpIjoiZWMxMmRhZTItZWE1Ni00NGZjLWI3ZmQtNTk4NDkyMjc3YmExIiwicmVmcmVzaCI6dHJ1ZX0.OLyYaST_mkIMbZYUU6-QCfT6dYT3URmoUERGQJ5Kwl4"
+  "message":"Signup successfully",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDY4NDEwODUsImV4cCI6MTcwNjg0MTE0NSwibmJmIjoxNzA2ODQxMDg1LCJzdWIiOiIxIiwianRpIjoiOGNhZDk2MmItYWVhYy00MmMzLWFjNTgtOGYwNTdkODg0YmQzIiwicmVmcmVzaCI6ZmFsc2V9.mm1hUxevMWoWaNhSCfzKEmry6117Fc355AMxnSZ6E6A",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDY4NDEwODUsImV4cCI6MTcwNjkyNzQ4NSwibmJmIjoxNzA2ODQxMDg1LCJzdWIiOiIxIiwianRpIjoiZWMxMmRhZTItZWE1Ni00NGZjLWI3ZmQtNTk4NDkyMjc3YmExIiwicmVmcmVzaCI6dHJ1ZX0.OLyYaST_mkIMbZYUU6-QCfT6dYT3URmoUERGQJ5Kwl4"
+  }
 }
 ```
 
@@ -83,7 +86,7 @@ curl -X POST http://127.0.0.1:8080/login -H "Content-Type: application/json" -d 
 
 ```json
 {
-  "email":"webcyou@webcyou.com",
+  "email": "webcyou@webcyou.com",
   "password": "1234"
 }
 ```
@@ -92,8 +95,11 @@ curl -X POST http://127.0.0.1:8080/login -H "Content-Type: application/json" -d 
 
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDY4NDEwODUsImV4cCI6MTcwNjg0MTE0NSwibmJmIjoxNzA2ODQxMDg1LCJzdWIiOiIxIiwianRpIjoiOGNhZDk2MmItYWVhYy00MmMzLWFjNTgtOGYwNTdkODg0YmQzIiwicmVmcmVzaCI6ZmFsc2V9.mm1hUxevMWoWaNhSCfzKEmry6117Fc355AMxnSZ6E6A",
-  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDY4NDEwODUsImV4cCI6MTcwNjkyNzQ4NSwibmJmIjoxNzA2ODQxMDg1LCJzdWIiOiIxIiwianRpIjoiZWMxMmRhZTItZWE1Ni00NGZjLWI3ZmQtNTk4NDkyMjc3YmExIiwicmVmcmVzaCI6dHJ1ZX0.OLyYaST_mkIMbZYUU6-QCfT6dYT3URmoUERGQJ5Kwl4"
+  "message": "Login successfully",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDY4NDEwODUsImV4cCI6MTcwNjg0MTE0NSwibmJmIjoxNzA2ODQxMDg1LCJzdWIiOiIxIiwianRpIjoiOGNhZDk2MmItYWVhYy00MmMzLWFjNTgtOGYwNTdkODg0YmQzIiwicmVmcmVzaCI6ZmFsc2V9.mm1hUxevMWoWaNhSCfzKEmry6117Fc355AMxnSZ6E6A",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDY4NDEwODUsImV4cCI6MTcwNjkyNzQ4NSwibmJmIjoxNzA2ODQxMDg1LCJzdWIiOiIxIiwianRpIjoiZWMxMmRhZTItZWE1Ni00NGZjLWI3ZmQtNTk4NDkyMjc3YmExIiwicmVmcmVzaCI6dHJ1ZX0.OLyYaST_mkIMbZYUU6-QCfT6dYT3URmoUERGQJ5Kwl4"
+  }
 }
 ```
 
