@@ -7,17 +7,8 @@ use crate::utils::token::{
     claims_verify_token, create_access_token, create_refresh_token, get_token,
 };
 use actix_web::{
-    delete,
-    error::ResponseError,
-    get,
-    http::{header::ContentType, StatusCode},
-    post, put,
-    web::Data,
-    web::Json,
-    web::Path,
-    HttpRequest, HttpResponse,
+    delete, get, post, put, web::Data, web::Json, web::Path, HttpRequest, HttpResponse,
 };
-use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize)]
