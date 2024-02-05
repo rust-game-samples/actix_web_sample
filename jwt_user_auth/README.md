@@ -10,6 +10,31 @@ Simple example of MongoDB usage with Actix Web. For more information on the Mong
 
 Visit the [MongoDB Download Center](https://www.mongodb.com/try) for instructions on how to use MongoDB Atlas or set up MongoDB locally.
 
+### Install MongoDB with Homebrew
+
+To install MongoDB with Homebrew, follow these steps.
+
+```shell
+brew tap mongodb/brew
+```
+```shell
+brew install mongodb-community
+```
+
+**Verification of Versions**
+
+```shell
+mongod --version
+```
+**start/stop method**
+
+```shell
+brew services start mongodb-community
+```
+```shell
+brew services stop mongodb-community
+```
+
 ### Set an environment variable
 
 The example code creates a client with the URI set by the MONGODB_URI environment variable. The default URI for a standalone mongod running on localhost is "mongodb://localhost:27017". For more information on MongoDB URIs, visit the connection string entry in the MongoDB manual.
