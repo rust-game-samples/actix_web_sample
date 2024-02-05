@@ -1,5 +1,5 @@
 use crate::constants::*;
-use crate::error::{ServiceError, UserError};
+use crate::error::ServiceError;
 use crate::model::{
     response::ResponseBody,
     token::CreateTokenResponse,
@@ -136,10 +136,28 @@ async fn update_user(
 pub async fn delete_user(
     ddb_repo: Data<MDBRepository>,
     uuid: Path<String>,
-) -> Result<String, UserError> {
+    request: HttpRequest,
+) -> Result<HttpResponse, ServiceError> {
     let user_id = uuid.into_inner();
-    match ddb_repo.delete_user(user_id.clone()).await {
-        Ok(_) => Ok("deleted".to_string()),
-        Err(_) => Err(UserError::UserUpdateFailure),
+    let token = get_token(request)?;
+    let claims = claims_verify_token(&token)?;
+
+    if claims.custom.refresh {
+        return Err(ServiceError::BadRequest {
+            error_message: MESSAGE_REFRESH_TOKEN_ERROR.to_string(),
+        });
+    }
+
+    let sub_uuid = claims.subject.unwrap();
+    if sub_uuid.clone() != user_id {
+        return Err(ServiceError::BadRequest {
+            error_message: MESSAGE_BAD_REQUEST.to_string(),
+        });
+    }
+
+    let result = ddb_repo.delete_user(user_id.clone()).await;
+    match result {
+        Ok(uuid) => Ok(HttpResponse::Ok().json(ResponseBody::new(MESSAGE_OK, uuid))),
+        Err(err) => Err(err),
     }
 }

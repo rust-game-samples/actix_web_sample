@@ -165,7 +165,10 @@ curl -X DELETE http://127.0.0.1:8080/user/{uuid} -H "Content-Type: application/j
 ### Response
 
 ```json
-{"uuid":"4b19e13e-73b4-4974-9016-eaa047fb3a63"}
+{
+  "message":"ok",
+  "data": "4b19e13e-73b4-4974-9016-eaa047fb3a63"
+}
 ```
 
 ## Refresh Token
@@ -187,7 +190,10 @@ Authorization [JWT token（refresh_token）]
 
 ```json
 {
-  "token": "ejdwqjdoqw ...."
+  "message": "ok",
+  "data": {
+    "token": "ejdwqjdoqw ...."
+  }
 }
 ```
 

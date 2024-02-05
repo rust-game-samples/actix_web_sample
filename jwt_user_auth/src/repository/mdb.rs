@@ -4,10 +4,7 @@ use crate::model::user::{RegisterUser, User};
 use bcrypt::verify;
 use mongodb::bson::doc;
 use mongodb::options::IndexOptions;
-use mongodb::{
-    results::{DeleteResult, InsertOneResult},
-    Client, Collection, IndexModel,
-};
+use mongodb::{results::InsertOneResult, Client, Collection, IndexModel};
 
 pub const DB_NAME: &str = "userJWT";
 pub const COLL_NAME: &str = "users";
@@ -54,7 +51,7 @@ impl MDBRepository {
 
         match result {
             Ok(user_result) => Ok(user_result),
-            Err(_) => Err(ServiceError::InternalServerError {
+            Err(_) => Err(ServiceError::CreationFailure {
                 error_message: MESSAGE_SIGNUP_FAILED.to_string(),
             }),
         }
@@ -121,7 +118,7 @@ impl MDBRepository {
             .await
         {
             Ok(Some(updated_user)) => Ok(updated_user),
-            Ok(None) => Err(ServiceError::NotFound {
+            Ok(None) => Err(ServiceError::UpdateFailure {
                 error_message: MESSAGE_CAN_NOT_UPDATE_DATA.to_string(),
             }),
             Err(_) => Err(ServiceError::InternalServerError {
@@ -130,10 +127,24 @@ impl MDBRepository {
         }
     }
 
-    pub async fn delete_user(&self, uuid: String) -> mongodb::error::Result<DeleteResult> {
+    pub async fn delete_user(&self, uuid: String) -> Result<String, ServiceError> {
         let collection: Collection<User> =
             self.client.database(DB_NAME).collection(&self.table_name);
-        let filter = doc! {"uuid": uuid};
-        collection.delete_one(filter, None).await
+        let filter = doc! {"uuid": &uuid};
+
+        match collection.delete_one(filter, None).await {
+            Ok(delete_result) => {
+                if delete_result.deleted_count == 0 {
+                    Err(ServiceError::NotFound {
+                        error_message: "User not found".to_string(),
+                    })
+                } else {
+                    Ok(uuid)
+                }
+            }
+            Err(_) => Err(ServiceError::InternalServerError {
+                error_message: MESSAGE_INTERNAL_SERVER_ERROR.to_string(),
+            }),
+        }
     }
 }

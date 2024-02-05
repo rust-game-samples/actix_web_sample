@@ -1,5 +1,6 @@
 use crate::constants::*;
 use crate::error::ServiceError;
+use crate::model::response::ResponseBody;
 use crate::model::token::CreateRefreshTokenResponse;
 use crate::utils::token::{claims_verify_token, create_access_token, get_token};
 use actix_web::{post, HttpRequest, HttpResponse};
@@ -17,5 +18,8 @@ async fn refresh_token(req: HttpRequest) -> Result<HttpResponse, ServiceError> {
     let sub_uuid = claims.subject.unwrap();
     let token = create_access_token(sub_uuid.clone())?;
 
-    Ok(HttpResponse::Ok().json(CreateRefreshTokenResponse { token }))
+    Ok(HttpResponse::Ok().json(ResponseBody::new(
+        MESSAGE_OK,
+        CreateRefreshTokenResponse { token },
+    )))
 }
