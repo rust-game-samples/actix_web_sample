@@ -79,7 +79,7 @@ curl -X POST http://127.0.0.1:8080/login -H "Content-Type: application/json" -d 
 `GET /user/uuid`
 
 ```shell
-curl -H GET 'http://127.0.0.1:8080/user/{uuid}' -H 'Content-Type: application/json' -H 'Authorization: Bearer [JWT Token (token)]'
+curl -H GET http://127.0.0.1:8080/user/{uuid} -H 'Content-Type: application/json' -H 'Authorization: Bearer [JWT Token (token)]'
 ```
 
 ### Response
@@ -107,13 +107,36 @@ curl -X PUT -H "Content-Type: application/json" -d '{"first_name": "daisuke", "l
 `PUT /user/uuid`
 
 ```shell
-curl -X DELETE -H "Content-Type: application/json" http://127.0.0.1:8080/user/{uuid}
+curl -X DELETE http://127.0.0.1:8080/user/{uuid} -H "Content-Type: application/json"
 ```
 
 ### Response
 
 ```shell
 {"uuid":"4b19e13e-73b4-4974-9016-eaa047fb3a63"}
+```
+
+## Refresh Token
+### Request
+
+```POST /token/refresh```
+
+```shell
+curl -X POST http://127.0.0.1:8080/token/refresh -H 'Content-Type: application/json' -H 'Authorization: Bearer [JWT Token (refresh_token)]'
+````
+
+*Headers*
+
+```
+Authorization [JWT token（refresh_token）]
+```
+
+### Response
+
+```json
+{
+  "token": "ejdwqjdoqw ...."
+}
 ```
 
 ## Article URL
