@@ -108,16 +108,10 @@ async fn get_user(
         });
     }
 
-    let collection = ddb_repo.get_user(sub_uuid.clone()).await;
-
-    match collection {
-        Ok(Some(user)) => Ok(HttpResponse::Ok().json(user)),
-        Ok(None) => Err(ServiceError::NotFound {
-            error_message: "No user found with userid".to_string(),
-        }),
-        Err(err) => Err(ServiceError::InternalServerError {
-            error_message: err.to_string(),
-        }),
+    let result = ddb_repo.get_user(sub_uuid.clone()).await;
+    match result {
+        Ok(user) => Ok(HttpResponse::Ok().json(ResponseBody::new(MESSAGE_OK, user))),
+        Err(err) => Err(err),
     }
 }
 

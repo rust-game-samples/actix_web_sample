@@ -83,10 +83,19 @@ impl MDBRepository {
         }
     }
 
-    pub async fn get_user(&self, uuid: String) -> mongodb::error::Result<Option<User>> {
+    pub async fn get_user(&self, uuid: String) -> Result<User, ServiceError> {
         let collection: Collection<User> =
             self.client.database(DB_NAME).collection(&self.table_name);
-        collection.find_one(doc! { "uuid": &uuid }, None).await
+
+        match collection.find_one(doc! { "uuid": &uuid }, None).await {
+            Ok(Some(user)) => Ok(user),
+            Ok(None) => Err(ServiceError::BadRequest {
+                error_message: MESSAGE_BAD_REQUEST.to_string(),
+            }),
+            Err(_) => Err(ServiceError::InternalServerError {
+                error_message: "".to_string(),
+            }),
+        }
     }
 
     pub async fn put_user(&self, uuid: String, user: User) -> mongodb::error::Result<UpdateResult> {
