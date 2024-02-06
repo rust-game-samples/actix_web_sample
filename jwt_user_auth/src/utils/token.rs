@@ -74,3 +74,16 @@ pub fn create_refresh_token(uuid: String) -> Result<String, ServiceError> {
     let claims = create_custom_claims(true, uuid, Duration::from_hours(24));
     claims_authenticate(claims)
 }
+
+pub fn get_sub_uuid(
+    claims: &JWTClaims<TokenClaims>,
+    user_id: &str,
+) -> Result<String, ServiceError> {
+    let sub_uuid = claims.subject.clone().unwrap();
+    if sub_uuid.clone() != user_id {
+        return Err(ServiceError::BadRequest {
+            error_message: MESSAGE_BAD_REQUEST.to_string(),
+        });
+    }
+    Ok(sub_uuid)
+}

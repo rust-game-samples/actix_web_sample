@@ -7,7 +7,7 @@ use crate::model::{
 };
 use crate::repository::mdb::MDBRepository;
 use crate::utils::token::{
-    claims_verify_token, create_access_token, create_refresh_token, get_token,
+    claims_verify_token, create_access_token, create_refresh_token, get_sub_uuid, get_token,
 };
 use actix_web::{
     delete, get, post, put, web::Data, web::Json, web::Path, HttpRequest, HttpResponse,
@@ -83,14 +83,7 @@ async fn get_user(
             error_message: MESSAGE_REFRESH_TOKEN_ERROR.to_string(),
         });
     }
-
-    let sub_uuid = claims.subject.unwrap();
-    if sub_uuid.clone() != user_id {
-        return Err(ServiceError::BadRequest {
-            error_message: MESSAGE_BAD_REQUEST.to_string(),
-        });
-    }
-
+    let sub_uuid = get_sub_uuid(&claims, &user_id)?;
     let result = ddb_repo.get_user(sub_uuid.clone()).await;
     match result {
         Ok(user) => Ok(HttpResponse::Ok().json(ResponseBody::new(MESSAGE_OK, user))),
@@ -106,7 +99,6 @@ async fn update_user(
     put_user: Json<PutUserRequest>,
 ) -> Result<HttpResponse, ServiceError> {
     let user_id = uuid.into_inner();
-
     let token = get_token(request)?;
     let claims = claims_verify_token(&token)?;
 
@@ -115,14 +107,7 @@ async fn update_user(
             error_message: MESSAGE_REFRESH_TOKEN_ERROR.to_string(),
         });
     }
-
-    let sub_uuid = claims.subject.unwrap();
-    if sub_uuid.clone() != user_id {
-        return Err(ServiceError::BadRequest {
-            error_message: MESSAGE_BAD_REQUEST.to_string(),
-        });
-    }
-
+    let sub_uuid = get_sub_uuid(&claims, &user_id)?;
     let new_user = User::from_put(user_id.clone(), put_user);
     let result = ddb_repo.put_user(sub_uuid.clone(), new_user).await;
 
@@ -148,14 +133,8 @@ pub async fn delete_user(
         });
     }
 
-    let sub_uuid = claims.subject.unwrap();
-    if sub_uuid.clone() != user_id {
-        return Err(ServiceError::BadRequest {
-            error_message: MESSAGE_BAD_REQUEST.to_string(),
-        });
-    }
-
-    let result = ddb_repo.delete_user(user_id.clone()).await;
+    let sub_uuid = get_sub_uuid(&claims, &user_id)?;
+    let result = ddb_repo.delete_user(sub_uuid.clone()).await;
     match result {
         Ok(uuid) => Ok(HttpResponse::Ok().json(ResponseBody::new(MESSAGE_OK, uuid))),
         Err(err) => Err(err),
