@@ -1,3 +1,5 @@
+pub const DB_NAME: &str = "todoApp";
+
 // Messages
 pub const MESSAGE_OK: &str = "ok";
 pub const MESSAGE_CAN_NOT_UPDATE_DATA: &str = "Can not update data";

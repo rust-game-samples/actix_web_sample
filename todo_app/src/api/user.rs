@@ -5,7 +5,7 @@ use crate::model::{
     token::CreateTokenResponse,
     user::{PutUserRequest, RegisterUser, SubmitUserRequest, User},
 };
-use crate::repository::mdb::MDBRepository;
+use crate::repository::user::UserRepository;
 use crate::utils::token::{
     claims_verify_token, create_access_token, create_refresh_token, get_sub_uuid, get_token,
 };
@@ -15,7 +15,7 @@ use actix_web::{
 
 #[post("/register")]
 async fn register_user(
-    ddb_repo: Data<MDBRepository>,
+    ddb_repo: Data<UserRepository>,
     request: Json<SubmitUserRequest>,
 ) -> Result<HttpResponse, ServiceError> {
     let new_user = RegisterUser::new(request.email.clone(), request.password.clone());
@@ -43,7 +43,7 @@ async fn register_user(
 
 #[post("/login")]
 async fn login_user(
-    ddb_repo: Data<MDBRepository>,
+    ddb_repo: Data<UserRepository>,
     request: Json<SubmitUserRequest>,
 ) -> Result<HttpResponse, ServiceError> {
     let result = ddb_repo.login_user(&request.email, &request.password).await;
@@ -69,7 +69,7 @@ async fn login_user(
 
 #[get("/{uuid}")]
 async fn get_user(
-    ddb_repo: Data<MDBRepository>,
+    ddb_repo: Data<UserRepository>,
     uuid: Path<String>,
     request: HttpRequest,
 ) -> Result<HttpResponse, ServiceError> {
@@ -93,7 +93,7 @@ async fn get_user(
 
 #[put("/{uuid}")]
 async fn update_user(
-    ddb_repo: Data<MDBRepository>,
+    ddb_repo: Data<UserRepository>,
     uuid: Path<String>,
     request: HttpRequest,
     put_user: Json<PutUserRequest>,
@@ -119,7 +119,7 @@ async fn update_user(
 
 #[delete("/{id}")]
 pub async fn delete_user(
-    ddb_repo: Data<MDBRepository>,
+    ddb_repo: Data<UserRepository>,
     uuid: Path<String>,
     request: HttpRequest,
 ) -> Result<HttpResponse, ServiceError> {

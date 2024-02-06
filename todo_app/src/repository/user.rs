@@ -5,8 +5,6 @@ use bcrypt::verify;
 use mongodb::bson::doc;
 use mongodb::options::IndexOptions;
 use mongodb::{results::InsertOneResult, Client, Collection, IndexModel};
-
-pub const DB_NAME: &str = "todoApp";
 pub const COLL_NAME: &str = "users";
 
 async fn create_username_index(client: &Client) {
@@ -24,26 +22,14 @@ async fn create_username_index(client: &Client) {
 }
 
 #[derive(Clone)]
-pub struct MDBRepository {
-    pub client: Client,
-    pub table_name: String,
+pub struct UserRepository {
     col: Collection<RegisterUser>,
 }
-
-impl MDBRepository {
-    pub async fn init(table_name: String) -> MDBRepository {
-        let uri =
-            std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
-        let client = Client::with_uri_str(uri).await.expect("failed to connect");
+impl UserRepository {
+    pub async fn new(client: &Client, db_name: &str) -> UserRepository {
+        let col = client.database(db_name).collection("users");
         create_username_index(&client).await;
-        let col: Collection<RegisterUser> =
-            client.database(DB_NAME).collection(&table_name.clone());
-
-        MDBRepository {
-            table_name,
-            client,
-            col,
-        }
+        UserRepository { col }
     }
 
     pub async fn post_user(&self, user: RegisterUser) -> Result<InsertOneResult, ServiceError> {
@@ -58,10 +44,7 @@ impl MDBRepository {
     }
 
     pub async fn login_user(&self, email: &str, password: &str) -> Result<User, ServiceError> {
-        let collection: Collection<RegisterUser> =
-            self.client.database(DB_NAME).collection(&self.table_name);
-
-        match collection.find_one(doc! {"email": email}, None).await {
+        match self.col.find_one(doc! {"email": email}, None).await {
             Ok(Some(user_data)) => {
                 if verify(password, &user_data.password).unwrap() {
                     Ok(User::from_register_data(user_data))
@@ -81,11 +64,14 @@ impl MDBRepository {
     }
 
     pub async fn get_user(&self, uuid: String) -> Result<User, ServiceError> {
-        let collection: Collection<User> =
-            self.client.database(DB_NAME).collection(&self.table_name);
-
-        match collection.find_one(doc! { "uuid": &uuid }, None).await {
-            Ok(Some(user)) => Ok(user),
+        match self.col.find_one(doc! { "uuid": &uuid }, None).await {
+            Ok(Some(user)) => Ok(User {
+                uuid: user.uuid.clone(),
+                first_name: user.first_name.clone(),
+                last_name: user.last_name.clone(),
+                username: user.username.clone(),
+                email: user.email.clone(),
+            }),
             Ok(None) => Err(ServiceError::BadRequest {
                 error_message: MESSAGE_BAD_REQUEST.to_string(),
             }),
@@ -96,8 +82,6 @@ impl MDBRepository {
     }
 
     pub async fn put_user(&self, uuid: String, user: User) -> Result<User, ServiceError> {
-        let collection: Collection<User> =
-            self.client.database(DB_NAME).collection(&self.table_name);
         let filter = doc! {"uuid": uuid};
         let update = doc! {
             "$set":
@@ -113,11 +97,14 @@ impl MDBRepository {
             .return_document(mongodb::options::ReturnDocument::After)
             .build();
 
-        match collection
-            .find_one_and_update(filter, update, options)
-            .await
-        {
-            Ok(Some(updated_user)) => Ok(updated_user),
+        match self.col.find_one_and_update(filter, update, options).await {
+            Ok(Some(updated_user)) => Ok(User {
+                uuid: updated_user.uuid.clone(),
+                first_name: updated_user.first_name.clone(),
+                last_name: updated_user.last_name.clone(),
+                username: updated_user.username.clone(),
+                email: updated_user.email.clone(),
+            }),
             Ok(None) => Err(ServiceError::UpdateFailure {
                 error_message: MESSAGE_CAN_NOT_UPDATE_DATA.to_string(),
             }),
@@ -128,11 +115,8 @@ impl MDBRepository {
     }
 
     pub async fn delete_user(&self, uuid: String) -> Result<String, ServiceError> {
-        let collection: Collection<User> =
-            self.client.database(DB_NAME).collection(&self.table_name);
         let filter = doc! {"uuid": &uuid};
-
-        match collection.delete_one(filter, None).await {
+        match self.col.delete_one(filter, None).await {
             Ok(delete_result) => {
                 if delete_result.deleted_count == 0 {
                     Err(ServiceError::NotFound {
