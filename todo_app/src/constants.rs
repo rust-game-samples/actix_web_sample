@@ -17,6 +17,10 @@ pub const MESSAGE_SIGNUP_FAILED: &str = "Error while signing up, please try agai
 pub const MESSAGE_LOGIN_SUCCESS: &str = "Login successfully";
 pub const MESSAGE_LOGIN_FAILED: &str = "Wrong username or password, please try again";
 pub const MESSAGE_INTERNAL_SERVER_ERROR: &str = "Internal Server Error";
+pub const MESSAGE_INVALID_TOKEN: &str = "Invalid token, please login again";
+
+// Misc
+pub const EMPTY: &str = "";
 
 // Bad request messages
 pub const MESSAGE_TOKEN_MISSING: &str = "Token is missing";

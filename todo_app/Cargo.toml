@@ -9,6 +9,7 @@ edition = "2021"
 mongodb = "2"
 serde = { version = "1.0", features = ["derive"] }
 actix-web = "4"
+actix-service = "^2"
 actix-web-httpauth = "*"
 jwt-simple = "0.10"
 rust-crypto = "0.2"
@@ -17,6 +18,7 @@ chrono = "0.4.31"
 bcrypt = "0.15.0"
 strum_macros = "^0.26"
 strum = { version = "^0.26", features = ["derive"] }
+futures = "0.3.28"
 futures-util = "0.3.30"
 
 [dependencies.uuid]

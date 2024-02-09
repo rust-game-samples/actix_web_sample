@@ -1,6 +1,7 @@
 mod api;
 mod constants;
 mod error;
+mod middleware;
 mod model;
 mod repository;
 mod utils;
@@ -8,6 +9,7 @@ mod utils;
 use actix_web::{web, App, HttpServer};
 use api::{todo::*, token::*, user::*};
 use constants::*;
+use middleware::auth_middleware::AuthMiddleware;
 use mongodb::Client;
 use repository::{todo::TodoRepository, user::UserRepository};
 
@@ -15,6 +17,7 @@ use repository::{todo::TodoRepository, user::UserRepository};
 async fn main() -> std::io::Result<()> {
     let uri = std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://localhost:27017".into());
     let client = Client::with_uri_str(uri).await.expect("failed to connect");
+
     let user_repo = UserRepository::new(&client, DB_NAME).await;
     let todo_repo = TodoRepository::new(&client, DB_NAME).await;
 
@@ -33,6 +36,7 @@ async fn main() -> std::io::Result<()> {
             )
             .service(
                 web::scope("/todos")
+                    .wrap(AuthMiddleware)
                     .service(post_todo)
                     .service(get_todos)
                     .service(get_todo)
