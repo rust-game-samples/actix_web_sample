@@ -2,10 +2,9 @@ use crate::constants::*;
 use crate::error::ServiceError;
 use crate::model::user::{RegisterUser, User};
 use bcrypt::verify;
-use mongodb::bson::doc;
-use mongodb::options::IndexOptions;
-use mongodb::{results::InsertOneResult, Client, Collection, IndexModel};
-pub const COLL_NAME: &str = "users";
+use mongodb::{
+    bson::doc, options::IndexOptions, results::InsertOneResult, Client, Collection, IndexModel,
+};
 
 async fn create_username_index(client: &Client) {
     let options = IndexOptions::builder().unique(true).build();
@@ -15,7 +14,7 @@ async fn create_username_index(client: &Client) {
         .build();
     client
         .database(DB_NAME)
-        .collection::<RegisterUser>(COLL_NAME)
+        .collection::<RegisterUser>(COLL_NAME_USERS)
         .create_index(model, None)
         .await
         .expect("creating an index should succeed");
@@ -27,7 +26,7 @@ pub struct UserRepository {
 }
 impl UserRepository {
     pub async fn new(client: &Client, db_name: &str) -> UserRepository {
-        let col = client.database(db_name).collection("users");
+        let col = client.database(db_name).collection(COLL_NAME_USERS);
         create_username_index(&client).await;
         UserRepository { col }
     }

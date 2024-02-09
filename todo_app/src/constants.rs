@@ -1,8 +1,14 @@
 pub const DB_NAME: &str = "todoApp";
 
+pub const COLL_NAME_USERS: &str = "users";
+pub const COLL_NAME_TODO: &str = "todos";
+
 // Messages
 pub const MESSAGE_OK: &str = "ok";
+pub const MESSAGE_CAN_NOT_FETCH_DATA: &str = "Can not fetch data";
+pub const MESSAGE_CAN_NOT_INSERT_DATA: &str = "Can not insert data";
 pub const MESSAGE_CAN_NOT_UPDATE_DATA: &str = "Can not update data";
+pub const MESSAGE_CAN_NOT_DELETE_DATA: &str = "Can not delete data";
 
 pub const MESSAGE_PROCESS_TOKEN_ERROR: &str = "Error while processing token";
 pub const MESSAGE_REFRESH_TOKEN_ERROR: &str = "Refresh tokens are not allowed";
