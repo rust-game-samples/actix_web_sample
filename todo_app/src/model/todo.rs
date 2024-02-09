@@ -1,4 +1,5 @@
 use actix_web::web::Json;
+use mongodb::bson::{doc, Document};
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString};
 use uuid::Uuid;
@@ -41,5 +42,24 @@ impl Todo {
             title: todo.title.clone(),
             state: todo.state.clone(),
         }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
+pub struct TodoUpdate {
+    pub title: Option<String>,
+    pub state: Option<String>,
+}
+
+impl TodoUpdate {
+    pub fn to_doc(&self) -> Document {
+        let mut update_doc = Document::new();
+        if let Some(title) = &self.title {
+            update_doc.insert("title", title);
+        }
+        if let Some(state) = &self.state {
+            update_doc.insert("state", state);
+        }
+        update_doc
     }
 }

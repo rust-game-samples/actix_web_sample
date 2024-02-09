@@ -5,13 +5,11 @@ mod model;
 mod repository;
 mod utils;
 
-use crate::api::todo::post_todo;
-use crate::constants::*;
-use crate::repository::{todo::TodoRepository, user::UserRepository};
 use actix_web::{web, App, HttpServer};
-use api::token::refresh_token;
-use api::user::{delete_user, get_user, login_user, register_user, update_user};
+use api::{todo::*, token::*, user::*};
+use constants::*;
 use mongodb::Client;
+use repository::{todo::TodoRepository, user::UserRepository};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -33,7 +31,15 @@ async fn main() -> std::io::Result<()> {
                     .service(update_user)
                     .service(delete_user),
             )
-            .service(web::scope("/todos").service(post_todo))
+            .service(
+                web::scope("/todos")
+                    .service(post_todo)
+                    .service(get_todos)
+                    .service(get_todo)
+                    .service(put_todo)
+                    .service(patch_todo_state)
+                    .service(delete_todo),
+            )
     })
     .bind(("127.0.0.1", 8080))?
     .run()

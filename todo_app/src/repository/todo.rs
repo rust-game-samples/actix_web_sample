@@ -1,8 +1,12 @@
 use crate::constants::*;
 use crate::error::ServiceError;
-use crate::model::todo::{SubmitTodoRequest, Todo};
+use crate::model::todo::{SubmitTodoRequest, Todo, TodoUpdate};
 use actix_web::web::Json;
-use mongodb::{bson::doc, options::IndexOptions, Client, Collection, IndexModel};
+use futures_util::stream::TryStreamExt;
+use mongodb::{
+    bson::doc, options::FindOneAndUpdateOptions, options::FindOptions, options::IndexOptions,
+    Client, Collection, IndexModel,
+};
 
 async fn create_todo_index(client: &Client) {
     let options = IndexOptions::builder().unique(true).build();
@@ -54,6 +58,106 @@ impl TodoRepository {
             }
             Err(_) => Err(ServiceError::CreationFailure {
                 error_message: MESSAGE_CAN_NOT_INSERT_DATA.to_string(),
+            }),
+        }
+    }
+
+    pub async fn get_todos(&self, page: i64, page_size: i64) -> Result<Vec<Todo>, ServiceError> {
+        let find_options = FindOptions::builder()
+            .limit(page_size)
+            .skip(((page - 1) * page_size) as u64)
+            .build();
+
+        match self.col.find(doc! {}, Some(find_options)).await {
+            Ok(mut cursor) => {
+                let mut todos = Vec::new();
+                while let Ok(Some(result)) = cursor.try_next().await {
+                    todos.push(result);
+                }
+                Ok(todos)
+            }
+            Err(_) => Err(ServiceError::NotFound {
+                error_message: "Failed to retrieve todos".to_string(),
+            }),
+        }
+    }
+
+    pub async fn get_todo(&self, uuid: String) -> Result<Todo, ServiceError> {
+        match self.col.find_one(doc! {"uuid": &uuid}, None).await {
+            Ok(Some(todo)) => Ok(todo),
+            Ok(None) => Err(ServiceError::NotFound {
+                error_message: MESSAGE_CAN_NOT_FETCH_DATA.to_string(),
+            }),
+            Err(_) => Err(ServiceError::InternalServerError {
+                error_message: "Failed to retrieve todo".to_string(),
+            }),
+        }
+    }
+
+    pub async fn put_todo(&self, uuid: String, updated_todo: Todo) -> Result<Todo, ServiceError> {
+        let filter = doc! {"uuid": &uuid};
+        let update = doc! {
+            "$set": {
+                "title": updated_todo.title,
+                "state": updated_todo.state,
+            }
+        };
+
+        let options = FindOneAndUpdateOptions::builder()
+            .return_document(mongodb::options::ReturnDocument::After)
+            .build();
+
+        match self.col.find_one_and_update(filter, update, options).await {
+            Ok(Some(todo)) => Ok(todo),
+            Ok(None) => Err(ServiceError::NotFound {
+                error_message: MESSAGE_CAN_NOT_FETCH_DATA.to_string(),
+            }),
+            Err(_) => Err(ServiceError::InternalServerError {
+                error_message: "Failed to update todo".to_string(),
+            }),
+        }
+    }
+
+    pub async fn delete_todo(&self, uuid: String) -> Result<(), ServiceError> {
+        let delete_result = self.col.delete_one(doc! {"uuid": &uuid}, None).await;
+
+        match delete_result {
+            Ok(result) => {
+                if result.deleted_count == 0 {
+                    Err(ServiceError::NotFound {
+                        error_message: "Todo not found".to_string(),
+                    })
+                } else {
+                    Ok(())
+                }
+            }
+            Err(_) => Err(ServiceError::InternalServerError {
+                error_message: MESSAGE_CAN_NOT_DELETE_DATA.to_string(),
+            }),
+        }
+    }
+
+    pub async fn patch_todo(
+        &self,
+        uuid: String,
+        update_data: TodoUpdate,
+    ) -> Result<Todo, ServiceError> {
+        let filter = doc! {"uuid": &uuid};
+        let update = doc! {
+            "$set": update_data.to_doc()
+        };
+
+        let options = FindOneAndUpdateOptions::builder()
+            .return_document(mongodb::options::ReturnDocument::After)
+            .build();
+
+        match self.col.find_one_and_update(filter, update, options).await {
+            Ok(Some(todo)) => Ok(todo),
+            Ok(None) => Err(ServiceError::NotFound {
+                error_message: "Todo not found".to_string(),
+            }),
+            Err(_) => Err(ServiceError::InternalServerError {
+                error_message: "Failed to update todo".to_string(),
             }),
         }
     }

@@ -17,6 +17,7 @@ chrono = "0.4.31"
 bcrypt = "0.15.0"
 strum_macros = "^0.26"
 strum = { version = "^0.26", features = ["derive"] }
+futures-util = "0.3.30"
 
 [dependencies.uuid]
 version = "1.7.0"
