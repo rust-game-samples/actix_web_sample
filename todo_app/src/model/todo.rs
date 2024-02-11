@@ -26,10 +26,10 @@ pub struct Todo {
     pub state: String,
 }
 impl Todo {
-    pub fn new(request: Json<SubmitTodoRequest>) -> Todo {
+    pub fn new(request: Json<SubmitTodoRequest>, user_id: String) -> Todo {
         Todo {
             uuid: Uuid::new_v4().to_string(),
-            user_id: "".to_string(),
+            user_id,
             title: request.title.to_string(),
             state: TodoState::NotStarted.to_string(),
         }
@@ -61,5 +61,34 @@ impl TodoUpdate {
             update_doc.insert("state", state);
         }
         update_doc
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
+pub struct TodoPaginationRequest {
+    pub page: Option<i64>,
+    pub page_size: Option<i64>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]
+pub struct TodoPagination {
+    pub page: i64,
+    pub page_size: i64,
+}
+impl TodoPagination {
+    pub fn new(request: Json<TodoPaginationRequest>) -> TodoPagination {
+        let mut new_page = 1;
+        let mut new_page_size = 30;
+        if let Some(page) = &request.page {
+            new_page = *page;
+        }
+        if let Some(page_size) = &request.page_size {
+            new_page_size = *page_size;
+        }
+
+        TodoPagination {
+            page: new_page,
+            page_size: new_page_size,
+        }
     }
 }

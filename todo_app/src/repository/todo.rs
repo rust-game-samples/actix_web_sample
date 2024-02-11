@@ -1,6 +1,6 @@
 use crate::constants::*;
 use crate::error::ServiceError;
-use crate::model::todo::{SubmitTodoRequest, Todo, TodoUpdate};
+use crate::model::todo::{SubmitTodoRequest, Todo, TodoPagination, TodoUpdate};
 use actix_web::web::Json;
 use futures_util::stream::TryStreamExt;
 use mongodb::{
@@ -33,8 +33,12 @@ impl TodoRepository {
         TodoRepository { col }
     }
 
-    pub async fn post_todo(&self, request: Json<SubmitTodoRequest>) -> Result<Todo, ServiceError> {
-        let new_todo = Todo::new(request);
+    pub async fn post_todo(
+        &self,
+        request: Json<SubmitTodoRequest>,
+        user_id: String,
+    ) -> Result<Todo, ServiceError> {
+        let new_todo = Todo::new(request, user_id);
         let result = self.col.insert_one(new_todo, None).await;
 
         match result {
@@ -62,13 +66,20 @@ impl TodoRepository {
         }
     }
 
-    pub async fn get_todos(&self, page: i64, page_size: i64) -> Result<Vec<Todo>, ServiceError> {
+    pub async fn get_todos(
+        &self,
+        todo_pagination: TodoPagination,
+        user_id: String,
+    ) -> Result<Vec<Todo>, ServiceError> {
         let find_options = FindOptions::builder()
-            .limit(page_size)
-            .skip(((page - 1) * page_size) as u64)
+            .limit(todo_pagination.page_size)
+            .skip(((todo_pagination.page - 1) * todo_pagination.page_size) as u64)
             .build();
+        let filter = doc! {
+            "user_id": &user_id
+        };
 
-        match self.col.find(doc! {}, Some(find_options)).await {
+        match self.col.find(filter, Some(find_options)).await {
             Ok(mut cursor) => {
                 let mut todos = Vec::new();
                 while let Ok(Some(result)) = cursor.try_next().await {
@@ -82,8 +93,12 @@ impl TodoRepository {
         }
     }
 
-    pub async fn get_todo(&self, uuid: String) -> Result<Todo, ServiceError> {
-        match self.col.find_one(doc! {"uuid": &uuid}, None).await {
+    pub async fn get_todo(&self, uuid: String, user_id: String) -> Result<Todo, ServiceError> {
+        let filter = doc! {
+            "uuid": &uuid,
+            "user_id": &user_id
+        };
+        match self.col.find_one(filter, None).await {
             Ok(Some(todo)) => Ok(todo),
             Ok(None) => Err(ServiceError::NotFound {
                 error_message: MESSAGE_CAN_NOT_FETCH_DATA.to_string(),
@@ -94,15 +109,22 @@ impl TodoRepository {
         }
     }
 
-    pub async fn put_todo(&self, uuid: String, updated_todo: Todo) -> Result<Todo, ServiceError> {
-        let filter = doc! {"uuid": &uuid};
+    pub async fn put_todo(
+        &self,
+        uuid: String,
+        user_id: String,
+        updated_todo: Todo,
+    ) -> Result<Todo, ServiceError> {
+        let filter = doc! {
+            "uuid": &uuid,
+            "user_id": &user_id
+        };
         let update = doc! {
             "$set": {
                 "title": updated_todo.title,
                 "state": updated_todo.state,
             }
         };
-
         let options = FindOneAndUpdateOptions::builder()
             .return_document(mongodb::options::ReturnDocument::After)
             .build();
@@ -118,8 +140,12 @@ impl TodoRepository {
         }
     }
 
-    pub async fn delete_todo(&self, uuid: String) -> Result<(), ServiceError> {
-        let delete_result = self.col.delete_one(doc! {"uuid": &uuid}, None).await;
+    pub async fn delete_todo(&self, uuid: String, user_id: String) -> Result<(), ServiceError> {
+        let filter = doc! {
+            "uuid": &uuid,
+            "user_id": &user_id
+        };
+        let delete_result = self.col.delete_one(filter, None).await;
 
         match delete_result {
             Ok(result) => {
@@ -140,9 +166,13 @@ impl TodoRepository {
     pub async fn patch_todo(
         &self,
         uuid: String,
+        user_id: String,
         update_data: TodoUpdate,
     ) -> Result<Todo, ServiceError> {
-        let filter = doc! {"uuid": &uuid};
+        let filter = doc! {
+            "uuid": &uuid,
+            "user_id": &user_id
+        };
         let update = doc! {
             "$set": update_data.to_doc()
         };
