@@ -30,6 +30,7 @@ async fn main() -> std::io::Result<()> {
             .service(web::scope("/token").service(refresh_token))
             .service(
                 web::scope("/user")
+                    .wrap(AuthMiddleware)
                     .service(get_user)
                     .service(update_user)
                     .service(delete_user),

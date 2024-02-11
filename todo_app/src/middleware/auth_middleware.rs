@@ -51,8 +51,11 @@ where
             if let Ok(auth_str) = auth_header.to_str() {
                 if is_auth_header_valid(auth_header) {
                     let token = auth_str[6..auth_str.len()].trim();
-                    if claims_verify_token(token).is_ok() {
-                        authenticate_pass = true;
+                    let result = claims_verify_token(token);
+                    if let Ok(claims) = result {
+                        if !claims.custom.refresh {
+                            authenticate_pass = true;
+                        }
                     }
                 }
             }

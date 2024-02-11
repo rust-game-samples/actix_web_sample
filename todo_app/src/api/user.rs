@@ -6,9 +6,7 @@ use crate::model::{
     user::{PutUserRequest, RegisterUser, SubmitUserRequest, User},
 };
 use crate::repository::user::UserRepository;
-use crate::utils::token::{
-    claims_verify_token, create_access_token, create_refresh_token, get_sub_uuid, get_token,
-};
+use crate::utils::token::{create_access_token, create_refresh_token, get_request_sub_uuid};
 use actix_web::{
     delete, get, post, put, web::Data, web::Json, web::Path, HttpRequest, HttpResponse,
 };
@@ -67,23 +65,12 @@ async fn login_user(
     }
 }
 
-#[get("/{uuid}")]
+#[get("/")]
 async fn get_user(
     ddb_repo: Data<UserRepository>,
-    uuid: Path<String>,
     request: HttpRequest,
 ) -> Result<HttpResponse, ServiceError> {
-    let user_id = uuid.into_inner();
-
-    let token = get_token(request)?;
-    let claims = claims_verify_token(&token)?;
-
-    if claims.custom.refresh {
-        return Err(ServiceError::BadRequest {
-            error_message: MESSAGE_REFRESH_TOKEN_ERROR.to_string(),
-        });
-    }
-    let sub_uuid = get_sub_uuid(&claims, &user_id)?;
+    let sub_uuid = get_request_sub_uuid(request)?;
     let result = ddb_repo.get_user(sub_uuid.clone()).await;
     match result {
         Ok(user) => Ok(HttpResponse::Ok().json(ResponseBody::new(MESSAGE_OK, user))),
@@ -91,24 +78,14 @@ async fn get_user(
     }
 }
 
-#[put("/{uuid}")]
+#[put("/")]
 async fn update_user(
     ddb_repo: Data<UserRepository>,
-    uuid: Path<String>,
     request: HttpRequest,
     put_user: Json<PutUserRequest>,
 ) -> Result<HttpResponse, ServiceError> {
-    let user_id = uuid.into_inner();
-    let token = get_token(request)?;
-    let claims = claims_verify_token(&token)?;
-
-    if claims.custom.refresh {
-        return Err(ServiceError::BadRequest {
-            error_message: MESSAGE_REFRESH_TOKEN_ERROR.to_string(),
-        });
-    }
-    let sub_uuid = get_sub_uuid(&claims, &user_id)?;
-    let new_user = User::from_put(user_id.clone(), put_user);
+    let sub_uuid = get_request_sub_uuid(request)?;
+    let new_user = User::from_put(sub_uuid.clone(), put_user);
     let result = ddb_repo.put_user(sub_uuid.clone(), new_user).await;
 
     match result {
@@ -117,23 +94,13 @@ async fn update_user(
     }
 }
 
-#[delete("/{id}")]
+#[delete("/")]
 pub async fn delete_user(
     ddb_repo: Data<UserRepository>,
-    uuid: Path<String>,
     request: HttpRequest,
 ) -> Result<HttpResponse, ServiceError> {
-    let user_id = uuid.into_inner();
-    let token = get_token(request)?;
-    let claims = claims_verify_token(&token)?;
+    let sub_uuid = get_request_sub_uuid(request)?;
 
-    if claims.custom.refresh {
-        return Err(ServiceError::BadRequest {
-            error_message: MESSAGE_REFRESH_TOKEN_ERROR.to_string(),
-        });
-    }
-
-    let sub_uuid = get_sub_uuid(&claims, &user_id)?;
     let result = ddb_repo.delete_user(sub_uuid.clone()).await;
     match result {
         Ok(uuid) => Ok(HttpResponse::Ok().json(ResponseBody::new(MESSAGE_OK, uuid))),
