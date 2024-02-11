@@ -34,15 +34,6 @@ impl Todo {
             state: TodoState::NotStarted.to_string(),
         }
     }
-
-    pub fn from_db(todo: Todo) -> Todo {
-        Todo {
-            uuid: todo.uuid.clone(),
-            user_id: todo.user_id.clone(),
-            title: todo.title.clone(),
-            state: todo.state.clone(),
-        }
-    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize)]

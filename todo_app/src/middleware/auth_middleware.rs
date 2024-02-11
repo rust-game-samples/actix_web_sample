@@ -5,7 +5,7 @@ use actix_service::forward_ready;
 use actix_web::body::EitherBody;
 use actix_web::{
     dev::{Service, ServiceRequest, ServiceResponse, Transform},
-    Error, HttpMessage, HttpResponse,
+    Error, HttpResponse,
 };
 use futures_util::future::{ok, LocalBoxFuture, Ready};
 

@@ -3,15 +3,9 @@ use crate::error::ServiceError;
 use crate::model::{
     response::ResponseBody,
     todo::{SubmitTodoRequest, Todo, TodoPagination, TodoPaginationRequest, TodoUpdate},
-    token::CreateTokenResponse,
-    user::{PutUserRequest, RegisterUser, SubmitUserRequest, User},
 };
 use crate::repository::todo::TodoRepository;
-use crate::repository::user::UserRepository;
-use crate::utils::token::{
-    claims_verify_token, create_access_token, create_refresh_token, get_request_sub_uuid,
-    get_sub_uuid, get_token,
-};
+use crate::utils::token::get_request_sub_uuid;
 use actix_web::{
     delete, get, patch, post, put, web::Data, web::Json, web::Path, HttpRequest, HttpResponse,
 };

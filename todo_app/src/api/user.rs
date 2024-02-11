@@ -7,9 +7,7 @@ use crate::model::{
 };
 use crate::repository::user::UserRepository;
 use crate::utils::token::{create_access_token, create_refresh_token, get_request_sub_uuid};
-use actix_web::{
-    delete, get, post, put, web::Data, web::Json, web::Path, HttpRequest, HttpResponse,
-};
+use actix_web::{delete, get, post, put, web::Data, web::Json, HttpRequest, HttpResponse};
 
 #[post("/register")]
 async fn register_user(

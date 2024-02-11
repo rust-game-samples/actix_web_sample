@@ -75,19 +75,6 @@ pub fn create_refresh_token(uuid: String) -> Result<String, ServiceError> {
     claims_authenticate(claims)
 }
 
-pub fn get_sub_uuid(
-    claims: &JWTClaims<TokenClaims>,
-    user_id: &str,
-) -> Result<String, ServiceError> {
-    let sub_uuid = claims.subject.clone().unwrap();
-    if sub_uuid.clone() != user_id {
-        return Err(ServiceError::BadRequest {
-            error_message: MESSAGE_BAD_REQUEST.to_string(),
-        });
-    }
-    Ok(sub_uuid)
-}
-
 pub fn get_request_sub_uuid(req: HttpRequest) -> Result<String, ServiceError> {
     let token = get_token(req)?;
     let claims = claims_verify_token(&token)?;
