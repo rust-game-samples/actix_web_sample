@@ -81,10 +81,8 @@ pub fn get_request_sub_uuid(req: HttpRequest) -> Result<String, ServiceError> {
     let result = claims.subject.clone();
     match result {
         Some(sub_uuid) => Ok(sub_uuid),
-        None => {
-            return Err(ServiceError::Unauthorized {
-                error_message: MESSAGE_TOKEN_MISSING.to_string(),
-            })
-        }
+        None => Err(ServiceError::Unauthorized {
+            error_message: MESSAGE_TOKEN_MISSING.to_string(),
+        }),
     }
 }

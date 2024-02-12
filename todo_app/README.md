@@ -1,4 +1,4 @@
-# Actix Web - MongoDB Todo APP API
+# Actix Web - MongoDB Todo App API
 
 Combines [simple JWT authentication](https://github.com/rust-game-samples/actix_web_sample/tree/main/jwt_auth) with a [user operation API](https://github.com/rust-game-samples/actix_web_sample/tree/main/mongodb).
 
@@ -110,10 +110,10 @@ curl -X POST http://127.0.0.1:8080/login -H "Content-Type: application/json" -d 
 
 ### Request
 
-`GET /user/uuid`
+`GET /user/`
 
 ```shell
-curl -H GET http://127.0.0.1:8080/user/{uuid} -H 'Content-Type: application/json' -H 'Authorization: Bearer [JWT Token (token)]'
+curl -H GET http://127.0.0.1:8080/user/ -H 'Content-Type: application/json' -H 'Authorization: Bearer [JWT Token (token)]'
 ```
 
 ### Response
@@ -133,10 +133,10 @@ curl -H GET http://127.0.0.1:8080/user/{uuid} -H 'Content-Type: application/json
 
 ## Change a User
 
-`PUT /user/uuid`
+`PUT /user/`
 
 ```shell
-curl -X PUT http://127.0.0.1:8080/user/{uuid} -H "Content-Type: application/json" -H 'Authorization: Bearer [JWT Token (token)]' -d '{"first_name": "daisuke", "last_name": "takayama", "username": "takayama_daisuke", "email": "webcyou@webcyou.com"}'
+curl -X PUT http://127.0.0.1:8080/user/ -H "Content-Type: application/json" -H 'Authorization: Bearer [JWT Token (token)]' -d '{"first_name": "daisuke", "last_name": "takayama", "username": "takayama_daisuke", "email": "webcyou@webcyou.com"}'
 ```
 
 ### Response
@@ -156,10 +156,10 @@ curl -X PUT http://127.0.0.1:8080/user/{uuid} -H "Content-Type: application/json
 
 ## DELETE a User
 
-`PUT /user/uuid`
+`PUT /user/`
 
 ```shell
-curl -X DELETE http://127.0.0.1:8080/user/{uuid} -H "Content-Type: application/json" -H 'Authorization: Bearer [JWT Token (token)]'
+curl -X DELETE http://127.0.0.1:8080/user/ -H "Content-Type: application/json" -H 'Authorization: Bearer [JWT Token (token)]'
 ```
 
 ### Response
@@ -174,7 +174,7 @@ curl -X DELETE http://127.0.0.1:8080/user/{uuid} -H "Content-Type: application/j
 ## Refresh Token
 ### Request
 
-```POST /token/refresh```
+`POST /token/refresh`
 
 ```shell
 curl -X POST http://127.0.0.1:8080/token/refresh -H 'Content-Type: application/json' -H 'Authorization: Bearer [JWT Token (refresh_token)]'
@@ -194,6 +194,187 @@ Authorization [JWT token（refresh_token）]
   "data": {
     "token": "ejdwqjdoqw ...."
   }
+}
+```
+
+## Create a new Todo
+### Request
+
+`POST /todos/`
+
+```shell
+curl -X POST http://127.0.0.1:8080/todos/ -H "Content-Type: application/json" -H 'Authorization: Bearer [JWT Token (token)]' -d '{"title":"my_first_todo"}'
+```
+
+**request body example**
+```json
+{
+  "title": "my_first_todo"
+}
+```
+
+### Response
+
+```json
+{
+  "message": "ok",
+  "data": {
+    "uuid": "1fff5f11-c91b-4b59-bc3a-58254a661ccc",
+    "user_id": "e65bfa19-3b71-497d-abda-978ede36b30f",
+    "title": "my_first_todo",
+    "state": "NotStarted"
+  }
+}
+```
+
+## Get Todo list
+### Request
+
+`GET /todos/`
+
+```shell
+curl -X GET http://127.0.0.1:8080/todos/ -H 'Content-Type: application/json' -H 'Authorization: Bearer [JWT Token (token)]'
+```
+
+**request body example（optional）**
+```json
+{
+  "page": 2,
+  "page_size": 30
+}
+```
+
+* Page and page_size are fine without them, and the default settings are 1 for page and 30 for page_size.
+
+### Response
+
+```json
+{
+    "message": "ok",
+    "data": [
+        {
+            "uuid": "c1e7bf36-c631-4bde-9ae9-9cd939bbcecc",
+            "user_id": "e65bfa19-3b71-497d-abda-978ede36b30f",
+            "title": "test_todo1",
+            "state": "Completed"
+        },
+        {
+            "uuid": "2278dc90-4ced-4e30-ad46-64961c8e3f15",
+            "user_id": "e65bfa19-3b71-497d-abda-978ede36b30f",
+            "title": "test_todo2",
+            "state": "NotStarted"
+        },
+        {
+            "uuid": "1fff5f11-c91b-4b59-bc3a-58254a661ccc",
+            "user_id": "e65bfa19-3b71-497d-abda-978ede36b30f",
+            "title": "my_first_todo",
+            "state": "NotStarted"
+        }
+    ]
+}
+```
+
+## Get a specific Todo
+### Request
+
+`GET /todos/{uuid}`
+
+```shell
+curl -X GET http://127.0.0.1:8080/todos/{uuid} -H 'Content-Type: application/json' -H 'Authorization: Bearer [JWT Token (token)]'
+```
+
+### Response
+
+```json
+{
+    "message": "ok",
+    "data": {
+        "uuid": "c1e7bf36-c631-4bde-9ae9-9cd939bbcecc",
+        "user_id": "e65bfa19-3b71-497d-abda-978ede36b30f",
+        "title": "test_todo1",
+        "state": "Completed"
+    }
+}
+```
+
+## Change a Todo
+### Request
+
+`PUT /todos/{uuid}`
+
+```shell
+curl -X PUT http://127.0.0.1:8080/todos/{uuid} -H 'Content-Type: application/json' -H 'Authorization: Bearer [JWT Token (token)]' -d '{"uuid": "c1e7bf36-c631-4bde-9ae9-9cd939bbcecc", "user_id": "e65bfa19-3b71-497d-abda-978ede36b30f", "title": "test_todo1_a", "state": "Completed"}'
+```
+
+**request body example**
+```json
+{
+    "uuid": "c1e7bf36-c631-4bde-9ae9-9cd939bbcecc",
+    "user_id": "e65bfa19-3b71-497d-abda-978ede36b30f",
+    "title": "test_todo1_a",
+    "state": "Completed"
+}
+```
+
+### Response
+
+```json
+{
+    "message": "ok",
+    "data": {
+        "uuid": "c1e7bf36-c631-4bde-9ae9-9cd939bbcecc",
+        "user_id": "e65bfa19-3b71-497d-abda-978ede36b30f",
+        "title": "test_todo1_a",
+        "state": "Completed"
+    }
+}
+```
+
+## Change a Todo State
+### Request
+
+`PUT /todos/{uuid}/state`
+
+```shell
+curl -X PUT http://127.0.0.1:8080/todos/{uuid} -H 'Content-Type: application/json' -H 'Authorization: Bearer [JWT Token (token)]' -d '{"state": "InProgress"}'
+```
+
+**request body example**
+```json
+{
+    "state": "InProgress"
+}
+```
+
+### Response
+
+```json
+{
+    "message": "ok",
+    "data": {
+        "uuid": "c1e7bf36-c631-4bde-9ae9-9cd939bbcecc",
+        "user_id": "e65bfa19-3b71-497d-abda-978ede36b30f",
+        "title": "test_todo1_a",
+        "state": "InProgress"
+    }
+}
+```
+
+## DELETE a Todo
+### Request
+
+`DELETE /todos/{uuid}`
+
+```shell
+curl -X DELETE http://127.0.0.1:8080/todos/{uuid} -H 'Content-Type: application/json' -H 'Authorization: Bearer [JWT Token (token)]'
+```
+
+### Response
+
+```json
+{
+    "message": "ok",
+    "data": null
 }
 ```
 
