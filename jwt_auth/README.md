@@ -1,5 +1,9 @@
 # Actix Web - Simple JWT Auth
 
+This is a simple demo of handling Actix Web and JWT and creating it as an API.
+
+For more information on JWT specifications, please click [here](https://jwt.io/).
+
 ## Basic Usage
 ### Run the example
 

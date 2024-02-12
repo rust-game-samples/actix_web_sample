@@ -4,6 +4,8 @@ Combines [simple JWT authentication](https://github.com/rust-game-samples/actix_
 
 Simple example of MongoDB usage with Actix Web. For more information on the MongoDB Rust driver, visit the [documentation](https://docs.rs/mongodb/2.0.0/mongodb/index.html) and [source code](https://github.com/mongodb/mongo-rust-driver).
 
+For more information on JWT specifications, please click [here](https://jwt.io/).
+
 ## Basic Usage
 
 ### Install MongoDB
