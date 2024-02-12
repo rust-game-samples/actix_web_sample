@@ -1,5 +1,7 @@
 # Actix Web - MongoDB Todo App API
 
+This is a sample of a simple todo application that includes authentication and authorization using JWT, and CRUD processing for each user and todo.
+
 Combines [simple JWT authentication](https://github.com/rust-game-samples/actix_web_sample/tree/main/jwt_auth) with a [user operation API](https://github.com/rust-game-samples/actix_web_sample/tree/main/mongodb).
 
 Simple example of MongoDB usage with Actix Web. For more information on the MongoDB Rust driver, visit the [documentation](https://docs.rs/mongodb/2.0.0/mongodb/index.html) and [source code](https://github.com/mongodb/mongo-rust-driver).

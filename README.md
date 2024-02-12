@@ -27,3 +27,9 @@ This is a simple demo of handling Actix Web and JWT and creating it as an API.
 [jwt_user_auth](https://github.com/rust-game-samples/actix_web_sample/tree/main/jwt_user_auth)
 
 This is a simple demo of creating an API with user registration in Actix Web and authentication authorization in JWT.
+
+### MongoDB Todo App API example
+
+[todo_app](https://github.com/rust-game-samples/actix_web_sample/tree/main/todo_app)
+
+This is a sample of a simple todo application that includes authentication and authorization using JWT, and CRUD processing for each user and todo.
