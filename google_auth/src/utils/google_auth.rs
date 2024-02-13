@@ -27,14 +27,14 @@ pub async fn get_client() -> CoreClient {
 
 pub fn get_code(url: Url) -> Result<AuthorizationCode, ServiceError> {
     let code_pair = url.query_pairs().find(|(key, _)| key == "code");
-    let result = if let Some(code_pair) = code_pair {
+
+    if let Some(code_pair) = code_pair {
         Ok(AuthorizationCode::new(code_pair.1.to_string()))
     } else {
         Err(ServiceError::BadRequest {
             error_message: MESSAGE_INTERNAL_SERVER_ERROR.to_string(),
         })
-    };
-    result
+    }
 }
 
 pub async fn get_token_response(
@@ -48,7 +48,7 @@ pub async fn get_token_response(
 
     match result {
         Ok(core_token_response) => Ok(core_token_response),
-        Err(_, ..) => Err(ServiceError::Unauthorized {
+        Err(_) => Err(ServiceError::Unauthorized {
             error_message: MESSAGE_INVALID_TOKEN.to_string(),
         }),
     }
