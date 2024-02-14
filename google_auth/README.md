@@ -43,7 +43,7 @@ Receive Callback with the following API URI.
 Show email of logged in account.
 
 ```shell
-email: "email address"
+Email: "email address"
 ```
 
 ## Article URL
