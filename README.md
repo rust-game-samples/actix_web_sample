@@ -33,3 +33,9 @@ This is a simple demo of creating an API with user registration in Actix Web and
 [todo_app](https://github.com/rust-game-samples/actix_web_sample/tree/main/todo_app)
 
 This is a sample of a simple todo application that includes authentication and authorization using JWT, and CRUD processing for each user and todo.
+
+### Google Auth API example
+
+[google_auth](https://github.com/rust-game-samples/actix_web_sample/tree/main/google_auth)
+
+This is a simple demo of logging in with a google account.
