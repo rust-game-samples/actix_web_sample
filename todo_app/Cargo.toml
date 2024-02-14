@@ -20,6 +20,8 @@ strum_macros = "^0.26"
 strum = { version = "^0.26", features = ["derive"] }
 futures = "0.3.28"
 futures-util = "0.3.30"
+openidconnect = "^3"
+url = "^2"
 
 [dependencies.uuid]
 version = "1.7.0"

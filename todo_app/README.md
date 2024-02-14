@@ -382,6 +382,44 @@ curl -X DELETE http://127.0.0.1:8080/todos/{uuid} -H 'Content-Type: application/
 }
 ```
 
+## Google Auth
+### Set an environment variable
+
+Set google client id and google client secret to environment variables.
+
+```shell
+GOOGLE_CLIENT_ID="your google client id"
+GOOGLE_CLIENT_SECRET="your google client secret"
+```
+
+Add http://127.0.0.1:8080/auth/google/callback to the approved redirect URIs.
+
+For more information, click [here](https://github.com/rust-game-samples/actix_web_sample/tree/main/google_auth).
+
+## Google Login User
+
+Open http://127.0.0.1:8080/auth/google/login in your browser.
+
+### Request
+
+`GET /auth/google/login`
+
+The Google OAuth consent screen will appear.
+
+Callback will retrieve your email and display it on the screen.
+
+### Response
+
+Receive Callback with the following API URI.
+
+`GET /auth/google/callback`
+
+Show email of logged in account.
+
+```shell
+Email: "email address"
+```
+
 ## Article URL
 
 
