@@ -13,6 +13,8 @@ use utils::google_auth::get_client;
 async fn main() -> std::io::Result<()> {
     let client = get_client().await;
 
+    println!("Open http://127.0.0.1:8080/auth/google/login in your browser.");
+
     HttpServer::new(move || {
         App::new().app_data(web::Data::new(client.clone())).service(
             web::scope("/auth")
