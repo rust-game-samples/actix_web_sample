@@ -130,4 +130,33 @@ impl UserRepository {
             }),
         }
     }
+
+    pub async fn find_or_create_user(&self, email: String) -> Result<User, ServiceError> {
+        match self.col.find_one(doc! { "email": &email }, None).await {
+            Ok(Some(user_data)) => Ok(User::from_register_data(user_data)),
+            Ok(None) => {
+                let new_user = RegisterUser::new(email.clone(), "".to_string());
+                let result = self.col.insert_one(new_user, None).await;
+                match result {
+                    Ok(insert_one_result) => {
+                        let inserted_id = insert_one_result.inserted_id;
+                        match self.col.find_one(doc! { "_id": inserted_id }, None).await {
+                            Ok(Some(created_user_data)) => {
+                                Ok(User::from_register_data(created_user_data))
+                            }
+                            _ => Err(ServiceError::CreationFailure {
+                                error_message: MESSAGE_SIGNUP_FAILED.to_string(),
+                            }),
+                        }
+                    }
+                    Err(_) => Err(ServiceError::CreationFailure {
+                        error_message: MESSAGE_SIGNUP_FAILED.to_string(),
+                    }),
+                }
+            }
+            Err(_) => Err(ServiceError::InternalServerError {
+                error_message: MESSAGE_INTERNAL_SERVER_ERROR.to_string(),
+            }),
+        }
+    }
 }
